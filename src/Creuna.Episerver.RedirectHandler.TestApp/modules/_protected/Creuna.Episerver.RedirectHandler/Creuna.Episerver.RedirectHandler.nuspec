@@ -3,7 +3,7 @@
     <metadata>
         <id>Creuna.Episerver.RedirectHandler</id>
         <title>Redirect Handler for EPiServer</title>
-        <version>1.0.0</version>
+        <version>1.0.0.2</version>
         <authors>Creuna</authors>
         <owners>Creuna</owners>
         <iconUrl>http://www.coderesort.com/favicon.ico</iconUrl>
@@ -19,7 +19,7 @@
     </metadata>
     <files>
         <file src="bin\$configuration$\Creuna.Episerver.RedirectHandler.dll" target="lib\net45\" />  
-        <!--<file src="bin\$configuration$\Creuna.Episerver.RedirectHandler.zip" target="content\modules\_protected\Creuna.Episerver.RedirectHandler\" />-->
+        <file src="bin\$configuration$\Creuna.Episerver.RedirectHandler.zip" target="content\modules\_protected\Creuna.Episerver.RedirectHandler\" />
         <file src="NotFound.aspx" target="content\NotFound.aspx" />
         <file src="web.config.transform" target="content\web.config.transform" />
     </files>

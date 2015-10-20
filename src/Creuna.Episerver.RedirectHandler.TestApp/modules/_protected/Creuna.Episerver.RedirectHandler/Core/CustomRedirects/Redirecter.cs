@@ -39,7 +39,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
                 if (_redirectConfiguration.Logging == LoggerMode.On)
                     RequestLogger.Instance.LogRequest(pathAndQuery, referer);
             }
-            return RedirectAttempt.Miss();
+            return RedirectAttempt.Miss;
         }
 
         private CustomRedirect FindRedirect(Uri urlNotFound)
@@ -54,9 +54,13 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
                 AddUrlToTouchedRedirects(touchedRedirects, redirect);
                 previousRedirect = redirect;
                 var urlToRedirect = urlNotFound.GetLeftPart(UriPartial.Authority);
-                redirect =
-                    GetRedirect(
-                        new Uri(new Uri(urlToRedirect, UriKind.Absolute), new Uri(previousRedirect.NewUrl, UriKind.Relative)));
+                var redirectTargetUri = new Uri(previousRedirect.NewUrl, UriKind.RelativeOrAbsolute);
+                if (redirectTargetUri.IsAbsoluteUri)
+                    redirect = null;
+                else
+                    redirect =
+                        GetRedirect(
+                            new Uri(new Uri(urlToRedirect, UriKind.Absolute), new Uri(previousRedirect.NewUrl, UriKind.Relative)));
             }
             redirect = previousRedirect;
             return redirect;

@@ -90,7 +90,7 @@
     <Compile Include="Core\CustomRedirects\DictionaryCachedRedirecter.cs" />
     <Compile Include="Core\CustomRedirects\ICachedRedirecter.cs" />
     <Compile Include="Core\CustomRedirects\IRedirecter.cs" />
-    <Compile Include="Core\CustomRedirects\RedirectAttempt.cs" />
+    <Compile Include="Core\RedirectAttempt.cs" />
     <Compile Include="Core\CustomRedirects\Redirecter.cs" />
     <Compile Include="Core\Initialization\Custom404HandlerInitialization.cs" />
     <Compile Include="Core\Logging\LogEvent.cs" />
@@ -145,9 +145,6 @@
     <None Include="Views\NotFoundRedirect\Suggestions.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </None>
-    <Compile Include="Configuration\Bvn404HandlerConfiguration.csd.cs">
-      <Link>Bvn\FileNotFound\Configuration\Bvn404HandlerConfiguration.csd.cs</Link>
-    </Compile>
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -194,9 +191,7 @@
     </None>
     <Content Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Bvn\FileNotFound\Configuration\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Reference Include="Castle.Core, Version=3.2.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>packages\Castle.Core.3.2.0\lib\net45\Castle.Core.dll</HintPath>
@@ -372,14 +367,14 @@
     <!-- Create the Versioned out dir for the client resources-->
     <!-- Copy -->
     <ItemGroup>
-      <ClientResources Include="$(SolutionDir)\ClientResources\**\*" />
-      <Views Include="$(SolutionDir)\Views\**\*" />
+      <ClientResources Include="$(ProjectDir)\ClientResources\**\*" />
+      <Views Include="$(ProjectDir)\Views\**\*" />
     </ItemGroup>
     <Copy SourceFiles="$(ProjectDir)\module.config" DestinationFolder="$(TmpOutDir)\content" />
     <Copy SourceFiles="@(ClientResources)" DestinationFiles="@(ClientResources -> '$(TmpOutDir)\content\ClientResources\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(Views)" DestinationFiles="@(Views -> '$(TmpOutDir)\content\Views\%(RecursiveDir)%(Filename)%(Extension)')" />
     <!-- Create the Zip file -->
-    <!--<ZipDirectory InputPath="$(TmpOutDir)\content" OutputFileName="$(OutDir)\Creuna.Episerver.RedirectHandler.zip" OverwriteExistingFile="true" />-->
+    <ZipDirectory InputPath="$(TmpOutDir)\content" OutputFileName="$(OutDir)\Creuna.Episerver.RedirectHandler.zip" OverwriteExistingFile="true" />
     <!-- Create the package -->
     <PropertyGroup>
       <NugetCommand>

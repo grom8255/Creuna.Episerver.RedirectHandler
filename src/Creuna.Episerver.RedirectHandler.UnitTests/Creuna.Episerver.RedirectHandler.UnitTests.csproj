@@ -163,6 +163,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\RedirectAttemptTests.cs" />
     <Compile Include="DictionaryCachedRedirecterTests.cs" />
     <Compile Include="RedirecterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

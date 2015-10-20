@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
+namespace Creuna.Episerver.RedirectHandler.Core
 {
     public struct RedirectAttempt
     {
@@ -13,10 +13,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             _newUrl = newUrl;
         }
 
-        public static RedirectAttempt Miss()
-        {
-            return new RedirectAttempt(false, null);
-        }
+        public static readonly RedirectAttempt Miss = new RedirectAttempt(false, null);
 
         public static RedirectAttempt Success(string newUrl)
         {
@@ -32,7 +29,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         {
             var result = 17;
             result = 31 * result + (Redirected ? 1 : 0);
-            result = 31 * result + NewUrl.GetHashCode();
+            result = 31 * result + (NewUrl != null ? NewUrl.GetHashCode() : 0);
             return result;
         }
 
@@ -40,11 +37,22 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         {
             if (obj == null)
                 return false;
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
                 return false;
             var other = (RedirectAttempt)obj;
             return other.Redirected == Redirected
                    && other.NewUrl == NewUrl;
+        }
+
+        public static bool operator ==(RedirectAttempt a, RedirectAttempt b)
+        {
+            // Return true if the fields match:
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(RedirectAttempt a, RedirectAttempt b)
+        {
+            return !(a == b);
         }
     }
 }

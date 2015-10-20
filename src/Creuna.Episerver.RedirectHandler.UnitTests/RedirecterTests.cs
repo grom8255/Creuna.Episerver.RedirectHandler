@@ -65,8 +65,6 @@ namespace Creuna.Episerver.RedirectHandler
                         .NewUrl.ShouldEqual("/new/look/to/norway?redirected=1&test=xyz");
                 }
             }
-
-
         }
 
         public class When_a_custom_redirect_is_set_up_with_exact_match : RedirecterTests
@@ -193,6 +191,55 @@ namespace Creuna.Episerver.RedirectHandler
                     "/correct", false, true, false));
                 _sut.Redirect("", new Uri("http://www.incoming.com/" + "a?x=y"))
                     .NewUrl.ShouldEqual("/correct");
+            }
+        }
+
+        public class When_the_target_url_is_absolute : RedirecterTests
+        {
+            [Test]
+            public void Redirects_without_querystrings_can_be_targeted_at_absolute_uris()
+            {
+                _redirects.Add(new CustomRedirect("/a",
+                    "http://www.externalsite.com", false, true, false));
+                _sut.Redirect(string.Empty, new Uri("http://mysite.com/a"))
+                    .NewUrl.ShouldEqual("http://www.externalsite.com");
+            }
+
+            [Test]
+            public void Redirects_with_querystrings_can_be_targeted_at_absolute_uris()
+            {
+                _redirects.Add(new CustomRedirect("/a",
+                    "http://www.externalsite.com", false, true, false));
+                _sut.Redirect(string.Empty, new Uri("http://mysite.com/a?test=1"))
+                    .NewUrl.ShouldEqual("http://www.externalsite.com");
+            }
+
+            [Test]
+            public void Redirects_with_querystrings_can_be_targeted_at_absolute_uris_with_forwarded_querystrings()
+            {
+                _redirects.Add(new CustomRedirect("/a",
+                    "http://www.externalsite.com", false, true, true));
+                _sut.Redirect(string.Empty, new Uri("http://mysite.com/a?test=1"))
+                    .NewUrl.ShouldEqual("http://www.externalsite.com?test=1");
+            }
+
+            [Test]
+            public void
+                Redirects_with_querystrings_can_be_targeted_at_absolute_uris_with_forwarded_querystrings_and_append()
+            {
+                _redirects.Add(new CustomRedirect("/a",
+                    "http://www.externalsite.com", true, false, true));
+                _sut.Redirect(string.Empty, new Uri("http://mysite.com/a/b"))
+                    .NewUrl.ShouldEqual("http://www.externalsite.com/b");
+            }
+
+            [Test]
+            public void Absolute_uris_with_nonexact_match_does_not_throw_loop_exception()
+            {
+                _redirects.Add(new CustomRedirect("/a",
+                    "http://www.externalsite.com", true, false, true));
+                _sut.Redirect(string.Empty, new Uri("http://mysite.com/a/aaaaaa"))
+                    .NewUrl.ShouldEqual("http://www.externalsite.com/aaaaaa");
             }
         }
     }
