@@ -135,7 +135,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         private static string GetCompleteQueryFrom(CustomRedirect redirect, Uri newUrl, Uri oldUri)
         {
             var a = GetQueryFrom(newUrl).Split(new[] { "&" }, StringSplitOptions.RemoveEmptyEntries)
-                .Concat((redirect.IncludeQueryString ? GetQueryFrom(oldUri).Substring(1) : "").Split(new[] { "&" },
+                .Concat((redirect.IncludeQueryString ? GetQueryFrom(oldUri) : "").Split(new[] { "&" },
                     StringSplitOptions.RemoveEmptyEntries));
             return string.Join("&", a);
         }
@@ -155,7 +155,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         private static string GetQueryFrom(Uri uri)
         {
-            return uri.IsAbsoluteUri ? uri.Query.Substring(1) : GetQueryFromLocalUri(uri);
+            return uri.IsAbsoluteUri ? uri.Query.Substring(1) : GetQuerystringWithoutQuestionMark(GetQueryFromLocalUri(uri));
         }
 
         private static string GetQueryFromLocalUri(Uri localUri)

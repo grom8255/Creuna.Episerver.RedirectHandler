@@ -169,30 +169,30 @@ namespace Creuna.Episerver.RedirectHandler
                 _sut.Redirect("", new Uri("http://www.incoming.com/" + "a?x=y"))
                     .NewUrl.ShouldEqual("/b?x=y");
             }
+        }
 
-            public class and_the_old_url_is_set_up_both_with_and_without_querystrings : When_a_custom_redirect_is_set_up_with_exact_match
+        public class When_an_old_url_is_set_up_both_with_and_without_querystrings : RedirecterTests
+        {
+            [Test]
+            public void _then_the_most_specific_redirect_is_used()
             {
-                [Test]
-                public void _then_the_most_specific_redirect_is_used()
-                {
-                    _redirects.Add(new CustomRedirect("/a",
-                        "/b", false, true, true));
-                    _redirects.Add(new CustomRedirect("/a?x=y",
-                        "/correct", false, true, true));
-                    _sut.Redirect("", new Uri("http://www.incoming.com/" + "a?x=y"))
-                        .NewUrl.ShouldEqual("/correct?x=y");
-                }
+                _redirects.Add(new CustomRedirect("/a",
+                    "/b", false, true, true));
+                _redirects.Add(new CustomRedirect("/a?x=y",
+                    "/correct", false, true, true));
+                _sut.Redirect("", new Uri("http://www.incoming.com/" + "a?x=y"))
+                    .NewUrl.ShouldEqual("/correct?x=y");
+            }
 
-                [Test]
-                public void _then_the_querystring_is_only_forwarded_if_specified()
-                {
-                    _redirects.Add(new CustomRedirect("/a",
-                        "/b", false, true, true));
-                    _redirects.Add(new CustomRedirect("/a?x=y",
-                        "/correct", false, true, false));
-                    _sut.Redirect("", new Uri("http://www.incoming.com/" + "a?x=y"))
-                        .NewUrl.ShouldEqual("/correct");
-                }
+            [Test]
+            public void _then_the_querystring_is_only_forwarded_if_specified()
+            {
+                _redirects.Add(new CustomRedirect("/a",
+                    "/b", false, true, true));
+                _redirects.Add(new CustomRedirect("/a?x=y",
+                    "/correct", false, true, false));
+                _sut.Redirect("", new Uri("http://www.incoming.com/" + "a?x=y"))
+                    .NewUrl.ShouldEqual("/correct");
             }
         }
     }
