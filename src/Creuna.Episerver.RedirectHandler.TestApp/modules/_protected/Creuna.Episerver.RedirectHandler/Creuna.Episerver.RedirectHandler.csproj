@@ -186,7 +186,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <None Include="CustomRedirects.config" />
-    <Content Include="web.config.transform" />
     <None Include="module.config">
       <SubType>Designer</SubType>
     </None>
