@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Creuna.Episerver.RedirectHandler.Core.Logging;
 
 namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 {
@@ -17,6 +18,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         public RedirectAttempt Redirect(string referer, Uri urlNotFound)
         {
+            bool added = false;
             if (!_redirects.ContainsKey(urlNotFound.PathAndQuery))
             {
                 lock (_lockObject)
@@ -24,10 +26,14 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
                     if (!_redirects.ContainsKey(urlNotFound.PathAndQuery))
                     {
                         _redirects.Add(urlNotFound.PathAndQuery, _redirecter.Redirect(referer, urlNotFound));
+                        added = true;
                     }
                 }
             }
-            return _redirects[urlNotFound.PathAndQuery];
+            var redirect = _redirects[urlNotFound.PathAndQuery];
+            if (!(redirect.Redirected || added))
+                RequestLogger.Instance.LogRequest(urlNotFound.PathAndQuery, referer);
+            return redirect;
         }
 
         public long GetCachedRedirectsCount()
