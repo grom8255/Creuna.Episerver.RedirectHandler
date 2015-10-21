@@ -39,9 +39,9 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         private const string KEY_ERROR_FALLBACK = "EPfBVN404UseStdErrorHandlerAsFallback";
         private const FileNotFoundMode DEF_NOTFOUND_MODE = FileNotFoundMode.On;
         public const int CurrentVersion = 3;
-        private static LoggerMode _logging = DEF_LOGGING;
+        // private static LoggerMode _logging = DEF_LOGGING;
         private static FileNotFoundMode? _handlerMode = DEF_NOTFOUND_MODE;
-        private static bool _handlerMode_IsRead;
+        //private static bool _handlerMode_IsRead;
         private bool? _fallbackToEPiServerError;
         private static int _loggingBufferSize = -1;
         private static int _loggingThresholdSize = -1;

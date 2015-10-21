@@ -5,8 +5,8 @@ using Creuna.Episerver.RedirectHandler.Core.Data;
 using Creuna.Episerver.RedirectHandler.Core.Upgrade;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
+using EPiServer.Logging.Compatibility;
 using EPiServer.ServiceLocation;
-using log4net;
 
 namespace Creuna.Episerver.RedirectHandler.Core.Initialization
 {

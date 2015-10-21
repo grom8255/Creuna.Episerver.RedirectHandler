@@ -4,9 +4,9 @@ using System.Threading;
 using Creuna.Episerver.RedirectHandler.Core.CustomRedirects;
 using EPiServer.Events;
 using EPiServer.Events.Clients;
+using EPiServer.Logging.Compatibility;
 using EPiServer.PlugIn;
 using EPiServer.ServiceLocation;
-using log4net;
 
 namespace Creuna.Episerver.RedirectHandler.Core.Data
 {
