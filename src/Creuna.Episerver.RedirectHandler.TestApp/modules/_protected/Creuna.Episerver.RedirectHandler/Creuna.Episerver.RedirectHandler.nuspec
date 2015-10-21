@@ -3,7 +3,7 @@
   <metadata>
     <id>Creuna.EPiServer.RedirectHandler</id>
     <title>Redirect Handler for EPiServer</title>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <authors>Creuna</authors>
     <owners>Creuna</owners>
     <iconUrl>http://www.coderesort.com/favicon.ico</iconUrl>
@@ -13,6 +13,8 @@
     <language>en-US</language>
     <dependencies>
       <dependency id="DotNetZip" version="1.9.1.8" />
+      <dependency id="EPiServer.Framework" version="9.1.0" />
+      <dependency id="EPiServer.CMS.Core" version="9.1.0" />
       <dependency id="EPiServer.CMS.UI.Core" version="9.2.0" />
     </dependencies>
   </metadata>
