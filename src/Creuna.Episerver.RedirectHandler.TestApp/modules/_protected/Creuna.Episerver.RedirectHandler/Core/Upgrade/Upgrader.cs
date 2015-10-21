@@ -1,6 +1,6 @@
 ﻿using Creuna.Episerver.RedirectHandler.Core.Configuration;
 using Creuna.Episerver.RedirectHandler.Core.Data;
-using log4net;
+using EPiServer.Logging.Compatibility;
 
 namespace Creuna.Episerver.RedirectHandler.Core.Upgrade
 {

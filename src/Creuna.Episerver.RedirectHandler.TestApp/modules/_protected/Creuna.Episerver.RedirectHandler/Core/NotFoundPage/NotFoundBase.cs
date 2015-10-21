@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Web;
 using System.Web.UI;
-using log4net;
+using EPiServer.Logging.Compatibility;
 
 namespace Creuna.Episerver.RedirectHandler.Core.NotFoundPage
 {
