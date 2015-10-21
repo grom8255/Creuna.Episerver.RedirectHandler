@@ -32,7 +32,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
     public class RedirectConfiguration
     {
         private const string DEF_REDIRECTS_XML_FILE = "~/CustomRedirects.config";
-        private const string DEF_NOTFOUND_PAGE = "~/bvn/filenotfound/notfound.aspx";
+        private const string DEF_NOTFOUND_PAGE = "~/notfound.aspx";
         private const LoggerMode DEF_LOGGING = LoggerMode.On;
         private const int DEF_BUFFER_SIZE = 30;
         private const int DEF_THRESHHOLD = 5;
