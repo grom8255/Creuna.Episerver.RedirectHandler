@@ -69,8 +69,6 @@ namespace Creuna.Episerver.RedirectHandler
 
         public class When_a_custom_redirect_is_set_up_with_exact_match : RedirecterTests
         {
-            private CustomRedirect _redirect;
-
             public override void SetUp()
             {
                 base.SetUp();
