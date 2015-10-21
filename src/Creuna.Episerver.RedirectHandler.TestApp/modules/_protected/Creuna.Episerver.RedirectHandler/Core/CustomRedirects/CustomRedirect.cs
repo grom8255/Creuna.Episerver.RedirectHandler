@@ -5,7 +5,7 @@ using EPiServer.Data.Dynamic;
 
 namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 {
-    [EPiServerDataStore(AutomaticallyRemapStore = true, StoreName = "Creuna.Episerver.RedirectHandler.CustomRedirect")]
+    [EPiServerDataStore(AutomaticallyRemapStore = true, StoreName = "BVNetwork.FileNotFound.Redirects.CustomRedirect")]
     public class CustomRedirect : IDynamicData
     {
         public CustomRedirect()
