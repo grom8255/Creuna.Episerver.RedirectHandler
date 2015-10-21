@@ -1,24 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Creuna.Episerver.RedirectHandler.Core.Configuration;
 using Creuna.Episerver.RedirectHandler.Core.Data;
 using EPiServer.Logging;
+using EPiServer.ServiceLocation;
 
 namespace Creuna.Episerver.RedirectHandler.Core.Logging
 {
     public class RequestLogger
     {
-        private static readonly RequestLogger instance = new RequestLogger();
+        private readonly RedirectConfiguration _redirectConfiguration;
+        private static readonly RequestLogger instance = ServiceLocator.Current.GetInstance<RequestLogger>();
+        private static RequestLogger instanceOverride = null;
         private static readonly ILogger Logger = LogManager.GetLogger();
 
-        private RequestLogger()
+        public RequestLogger(RedirectConfiguration redirectConfiguration)
         {
+            _redirectConfiguration = redirectConfiguration;
             LogQueue = new List<LogEvent>();
         }
 
         public static RequestLogger Instance
         {
-            get { return InternalInstance; }
+            get { return instanceOverride ?? InternalInstance; }
+            set { instanceOverride = value; }
         }
 
         internal static RequestLogger InternalInstance
@@ -28,9 +34,9 @@ namespace Creuna.Episerver.RedirectHandler.Core.Logging
 
         private List<LogEvent> LogQueue { get; set; }
 
-        public void LogRequest(string oldUrl, string referrer)
+        public virtual void LogRequest(string oldUrl, string referrer)
         {
-            int bufferSize = Configuration.RedirectConfiguration.BufferSize;
+            int bufferSize = _redirectConfiguration.BufferSize;
             if (LogQueue.Count >= bufferSize)
             {
                 lock (LogQueue)
@@ -54,8 +60,8 @@ namespace Creuna.Episerver.RedirectHandler.Core.Logging
         private void LogRequests(List<LogEvent> logEvents)
         {
             Logger.Debug("Logging 404 errors to database");
-            int bufferSize = Configuration.RedirectConfiguration.BufferSize;
-            int threshold = Configuration.RedirectConfiguration.ThreshHold;
+            int bufferSize = _redirectConfiguration.BufferSize;
+            int threshold = _redirectConfiguration.ThreshHold;
             DateTime start = logEvents.First().Requested;
             DateTime end = logEvents.Last().Requested;
             int diff = (end - start).Seconds;

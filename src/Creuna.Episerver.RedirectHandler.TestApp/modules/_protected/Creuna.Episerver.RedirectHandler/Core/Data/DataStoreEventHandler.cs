@@ -10,7 +10,8 @@ using EPiServer.ServiceLocation;
 
 namespace Creuna.Episerver.RedirectHandler.Core.Data
 {
-    public class DataStoreEventHandlerHook : PlugInAttribute
+    [ServiceConfiguration(typeof(IDataStoreEventHandler), Lifecycle = ServiceInstanceScope.Singleton)]
+    public class DataStoreEventHandlerHook : PlugInAttribute, IDataStoreEventHandler
     {
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly Guid _dataStoreUpdateEventId = new Guid("{26A1CA35-1CBD-44a7-8243-5E80D79F3F26}");
@@ -53,16 +54,31 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
             _log.DebugFormat("dataStoreInvalidationEvent '{2}' handled - raised by '{0}' on '{1}'", e.RaiserId,
                 Environment.MachineName, e.EventId);
             _log.DebugFormat("Begin: Clearing cache on '{0}'", Environment.MachineName);
-            ServiceLocator.Current.GetInstance<CustomRedirectHandler>().ClearCache();
+            ClearCache();
             _log.DebugFormat("End: Clearing cache on '{0}'", Environment.MachineName);
         }
 
         public static void DataStoreUpdated()
+        {
+            ServiceLocator.Current.GetInstance<IDataStoreEventHandler>().DataStoreUpdated();
+        }
+
+        void IDataStoreEventHandler.DataStoreUpdated()
         {
             // File is changing, notify the other servers
             Event dataStoreInvalidateEvent = Event.Get(_dataStoreUpdateEventId);
             // Raise event
             dataStoreInvalidateEvent.Raise(_dataStoreUpdateRaiserId, null);
         }
+
+        private static void ClearCache()
+        {
+            ServiceLocator.Current.GetInstance<CustomRedirectHandler>().ClearCache();
+        }
+    }
+
+    public interface IDataStoreEventHandler
+    {
+        void DataStoreUpdated();
     }
 }

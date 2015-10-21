@@ -90,6 +90,7 @@
     <Compile Include="Core\CustomRedirects\DictionaryCachedRedirecter.cs" />
     <Compile Include="Core\CustomRedirects\ICachedRedirecter.cs" />
     <Compile Include="Core\CustomRedirects\IRedirecter.cs" />
+    <Compile Include="Core\CustomRedirects\RedirecterFactory.cs" />
     <Compile Include="Core\RedirectAttempt.cs" />
     <Compile Include="Core\CustomRedirects\Redirecter.cs" />
     <Compile Include="Core\Initialization\Custom404HandlerInitialization.cs" />

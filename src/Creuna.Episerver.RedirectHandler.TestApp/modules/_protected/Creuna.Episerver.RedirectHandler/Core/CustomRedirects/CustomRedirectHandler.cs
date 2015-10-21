@@ -2,6 +2,7 @@ using System;
 using Creuna.Episerver.RedirectHandler.Core.Configuration;
 using Creuna.Episerver.RedirectHandler.Core.Data;
 using EPiServer.Logging;
+using EPiServer.ServiceLocation;
 
 namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 {
@@ -9,11 +10,12 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
     ///     Handler for custom redirects. Loads and caches the list of custom redirects
     ///     to ensure performance.
     /// </summary>
+    [ServiceConfiguration(typeof(CustomRedirectHandler), Lifecycle = ServiceInstanceScope.Singleton)]
     public class CustomRedirectHandler
     {
         private readonly RedirectConfiguration _redirectConfiguration;
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(CustomRedirectHandler));
-        private DictionaryCachedRedirecter _redirecter;
+        private IRedirecter _redirecter;
 
         public CustomRedirectHandler(RedirectConfiguration redirectConfiguration)
         {
@@ -21,9 +23,10 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             _redirecter = CreateRedirecter();
         }
 
-        private DictionaryCachedRedirecter CreateRedirecter()
+        private IRedirecter CreateRedirecter()
         {
-            return new DictionaryCachedRedirecter(new Redirecter(LoadCustomRedirects(), _redirectConfiguration));
+            var result = RedirecterFactory.Current.CreateRedirecter(LoadCustomRedirects(), _redirectConfiguration);
+            return result;
         }
 
         public static string CustomRedirectHandlerException { get; set; }
@@ -32,7 +35,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         ///     Save a collection of redirects, and call method to raise an event in order to clear cache on all servers.
         /// </summary>
         /// <param name="redirects"></param>
-        public void SaveCustomRedirects(CustomRedirectCollection redirects)
+        public virtual void SaveCustomRedirects(CustomRedirectCollection redirects)
         {
             Logger.Log(Level.Debug, "Saving custom redirects");
             var dynamicHandler = new DataStoreHandler();
@@ -48,7 +51,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         ///     Read the custom redirects from the dynamic data store, and
         ///     stores them in the CustomRedirect property
         /// </summary>
-        protected CustomRedirectCollection LoadCustomRedirects()
+        protected virtual CustomRedirectCollection LoadCustomRedirects()
         {
             var dynamicHandler = new DataStoreHandler();
             var customRedirects = new CustomRedirectCollection();
@@ -62,12 +65,12 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         /// <summary>
         ///     Clears the redirect cache.
         /// </summary>
-        public void ClearCache()
+        public virtual void ClearCache()
         {
             _redirecter = CreateRedirecter();
         }
 
-        public RedirectAttempt HandleRequest(string referer, Uri urlNotFound)
+        public virtual RedirectAttempt HandleRequest(string referer, Uri urlNotFound)
         {
             return _redirecter.Redirect(referer, urlNotFound);
         }

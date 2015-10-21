@@ -1,6 +1,7 @@
 ﻿using System;
 using Creuna.Episerver.RedirectHandler.Core.Configuration;
 using Creuna.Episerver.RedirectHandler.Core.CustomRedirects;
+using Creuna.Episerver.RedirectHandler.Core.Logging;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Should;
@@ -21,6 +22,7 @@ namespace Creuna.Episerver.RedirectHandler
             _configuration = new RedirectConfiguration();
             _redirects = new CustomRedirectCollection();
             _sut = new Redirecter(_redirects, _configuration);
+            RequestLogger.Instance = new RequestLogger(_configuration);
         }
 
         public class When_a_redirect_is_set_up_with_append : RedirecterTests
