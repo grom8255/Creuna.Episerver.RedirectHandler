@@ -1,16 +1,10 @@
-<configuration>	 	
-	<configSections>
-		<section name="bvn404Handler"
- 	 	                 type="BVNetwork.NotFound.Configuration.Bvn404HandlerConfiguration, BVNetwork.EPi404"/>
-    </configSections>
-	<bvn404Handler handlerMode="On"
-                   fileNotFoundPage="/notfound.aspx">
- 	 	<providers>
- 	 	    <!--
- 	 	        Register your own handler that will be given a chance to
- 	 	        rewrite the url. The type must implement INotFoundHandler
- 	 	        <add name="NameOfHandler" type="Your.Handler.Here" />
- 	 	     -->
- 	 	</providers>
- 	</bvn404Handler> 
+<configuration>
+  <appSettings>
+    <add key="FileNotFoundHandlerMode" value="On" />
+    <add key="EPfBVN404UseStdErrorHandlerAsFallback" value="false" />
+    <add key="RedirectLogging" value="true" />
+    <add key="FileNotFoundHandlerPage" value="/notfound" />
+    <add key="RedirectsLoggingBufferSize" value="30" />
+    <add key="RedirectsLoggingThresholdSize" value="5" />
+  </appSettings>
 </configuration>
