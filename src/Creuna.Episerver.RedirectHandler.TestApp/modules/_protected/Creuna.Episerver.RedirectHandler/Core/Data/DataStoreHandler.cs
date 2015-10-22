@@ -56,10 +56,19 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
         {
             using (var store = GetStore())
             {
-                return
-                    store.Items<CustomRedirect>()
-                        .Where(r => (!excludeIgnored) || r.State.Equals((int)GetState.Saved))
-                        .ToList();
+                IEnumerable<CustomRedirect> customRedirects;
+                if (excludeIgnored)
+                {
+                    customRedirects = from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
+                                      where s.State.Equals((int)GetState.Saved)
+                                      select s;
+                }
+                else
+                {
+                    customRedirects = from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
+                                      select s;
+                }
+                return customRedirects.ToList();
             }
         }
 
