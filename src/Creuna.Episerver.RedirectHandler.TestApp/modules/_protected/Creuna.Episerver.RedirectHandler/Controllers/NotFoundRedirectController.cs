@@ -66,7 +66,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
                             CustomRedirectHandler.CustomRedirectHandlerException);
             }
             bool suggestion = false;
-            ;
+
             List<CustomRedirect> customRedirectList;
             if (isSuggestions.HasValue && isSuggestions.Value)
             {
@@ -268,9 +268,9 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
             // Read all redirects from xml file
             var parser = new RedirectsXmlParser(xmlfile.InputStream);
             // Save all redirects from xml file
-            CustomRedirectCollection redirects = parser.Load();
+            CustomRedirectCollection redirects = (parser.Load() ?? new CustomRedirectCollection());
             string message;
-            if (redirects != null || redirects.Count != 0)
+            if (redirects.Count > 0)
             {
                 _customRedirectHandler.SaveCustomRedirects(redirects);
                 message = string.Format(LocalizationService.Current.GetString("/gadget/redirects/importsuccess"),

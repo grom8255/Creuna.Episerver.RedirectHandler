@@ -239,6 +239,15 @@ namespace Creuna.Episerver.RedirectHandler
                 _sut.Redirect(string.Empty, new Uri("http://mysite.com/a/aaaaaa"))
                     .NewUrl.ShouldEqual("http://www.externalsite.com/aaaaaa");
             }
+
+            [Test]
+            public void Append_with_querystrings_included_redirects_to_appended_url_with_querystring()
+            {
+                _redirects.Add(new CustomRedirect("/de/",
+                    "/de-welcome/", true, true, true));
+                _sut.Redirect(string.Empty, new Uri("http://mysite.com/de/?parameter=value"))
+                    .NewUrl.ShouldEqual("/de-welcome/?parameter=value");
+            }
         }
     }
 }

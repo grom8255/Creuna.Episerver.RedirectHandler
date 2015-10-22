@@ -94,7 +94,6 @@
     <Compile Include="Core\CustomRedirects\Redirecter.cs" />
     <Compile Include="Core\Initialization\Custom404HandlerInitialization.cs" />
     <Compile Include="Core\Logging\LogEvent.cs" />
-    <Compile Include="Core\Obsolete\CustomRedirect.cs" />
     <Compile Include="Core\ColorHelper.cs" />
     <Compile Include="Controllers\NotFoundRedirectController.cs" />
     <Compile Include="Core\Upgrade\Upgrader.cs" />

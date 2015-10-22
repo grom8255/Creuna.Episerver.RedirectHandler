@@ -28,7 +28,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
             return ServiceLocator.Current.GetInstance<DataAccessBaseEx>();
         }
 
-        public DataSet ExecuteSQL(string sqlCommand, List<IDbDataParameter> parameters)
+        public DataSet ExecuteSql(string sqlCommand, List<IDbDataParameter> parameters)
         {
             return base.Database.Execute(delegate
             {
@@ -38,7 +38,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
                     DbCommand command = CreateCommand(sqlCommand);
                     if (parameters != null)
                     {
-                        foreach (SqlParameter parameter in parameters)
+                        foreach (var parameter in parameters)
                         {
                             command.Parameters.Add(parameter);
                         }
@@ -50,7 +50,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
                 {
                     Logger.Error(
                         string.Format(
-                            "An error occureding in the ExecuteSQL method with the following sql{0}. Exception:{1}",
+                            "An error occured in the ExecuteSQL method with the following sql: {0}. Exception:{1}",
                             sqlCommand, ex));
                 }
 
@@ -89,7 +89,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
                 string.Format(
                     "SELECT [OldUrl], COUNT(*) as Requests FROM {0} GROUP BY [OldUrl] order by Requests desc",
                     RedirectsTable);
-            return ExecuteSQL(sqlCommand, null);
+            return ExecuteSql(sqlCommand, null);
         }
 
         public void DeleteRowsForRequest(string oldUrl)
@@ -99,7 +99,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
             oldUrlParam.Value = oldUrl;
             var parameters = new List<IDbDataParameter>();
             parameters.Add(oldUrlParam);
-            ExecuteSQL(sqlCommand, parameters);
+            ExecuteSql(sqlCommand, parameters);
         }
 
         public void DeleteSuggestions(int maxErrors, int minimumDaysOld)
@@ -115,13 +115,13 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
                                                       having count(*) <= {2} 
                                                       ) t
                                                 )", RedirectsTable, minimumDaysOld, maxErrors);
-            ExecuteSQL(sqlCommand, null);
+            ExecuteSql(sqlCommand, null);
         }
 
         public void DeleteAllSuggestions()
         {
             string sqlCommand = string.Format(@"delete from {0}", RedirectsTable);
-            ExecuteSQL(sqlCommand, null);
+            ExecuteSql(sqlCommand, null);
         }
 
         public DataSet GetRequestReferers(string url)
@@ -135,13 +135,13 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
 
             var parameters = new List<IDbDataParameter>();
             parameters.Add(oldUrlParam);
-            return ExecuteSQL(sqlCommand, parameters);
+            return ExecuteSql(sqlCommand, parameters);
         }
 
         public DataSet GetTotalNumberOfSuggestions()
         {
             string sqlCommand = string.Format("SELECT COUNT(DISTINCT [OldUrl]) FROM {0}", RedirectsTable);
-            return ExecuteSQL(sqlCommand, null);
+            return ExecuteSql(sqlCommand, null);
         }
 
 

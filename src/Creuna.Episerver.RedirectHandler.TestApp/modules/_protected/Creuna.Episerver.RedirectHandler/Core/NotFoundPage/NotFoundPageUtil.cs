@@ -39,7 +39,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.NotFoundPage
             }
             if (uriNotFound == null)
             {
-                if (query.StartsWith("aspxerrorpath="))
+                if (query != null & query.StartsWith("aspxerrorpath="))
                 {
                     string[] parts = query.Split('=');
                     uriNotFound =

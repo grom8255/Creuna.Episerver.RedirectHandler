@@ -134,7 +134,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
                 if (_loggingBufferSize == -1)
                 {
                     var configured = ConfigurationManager.AppSettings["RedirectsLoggingBufferSize"] ??
-                                     DEF_BUFFER_SIZE.ToString();
+                                     DEF_BUFFER_SIZE.ToString(CultureInfo.InvariantCulture);
                     int parsed;
                     if (int.TryParse(configured, out parsed))
                         _loggingBufferSize = parsed;
@@ -155,7 +155,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
                if (_loggingThresholdSize == -1)
                 {
                     var configured = ConfigurationManager.AppSettings["RedirectsLoggingThresholdSize"] ??
-                                     DEF_THRESHHOLD.ToString();
+                                     DEF_THRESHHOLD.ToString(CultureInfo.InvariantCulture);
                     int parsed;
                     if (int.TryParse(configured, out parsed))
                         _loggingThresholdSize = parsed;

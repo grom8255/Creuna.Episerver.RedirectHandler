@@ -14,21 +14,23 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
             Ignored = 2
         };
 
-        private const string OLD_URL_PROPERTY_NAME = "OldUrl";
+        private const string OldUrlPropertyName = "OldUrl";
 
         public void SaveCustomRedirect(CustomRedirect currentCustomRedirect)
         {
             // Get hold of the datastore
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-            //check if there is an exisiting object with matching property "OldUrl"
-            CustomRedirect match =
-                store.Find<CustomRedirect>(OLD_URL_PROPERTY_NAME, currentCustomRedirect.OldUrl.ToLower())
-                    .SingleOrDefault();
-            //if there is a match, replace the value.
-            if (match != null)
-                store.Save(currentCustomRedirect, match.Id);
-            else
-                store.Save(currentCustomRedirect);
+            using (DynamicDataStore store = DataStoreFactory.GetStore(typeof(CustomRedirect)))
+            {
+                //check if there is an exisiting object with matching property "OldUrl"
+                CustomRedirect match =
+                    store.Find<CustomRedirect>(OldUrlPropertyName, currentCustomRedirect.OldUrl.ToLower())
+                        .SingleOrDefault();
+                //if there is a match, replace the value.
+                if (match != null)
+                    store.Save(currentCustomRedirect, match.Id);
+                else
+                    store.Save(currentCustomRedirect);
+            }
         }
 
 
@@ -38,32 +40,25 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
         /// <returns></returns>
         public List<CustomRedirect> GetCustomRedirects(bool excludeIgnored)
         {
-            // IEnumerable<CustomRedirect> customRedirects = null;
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-            IEnumerable<CustomRedirect> customRedirects;
-            if (excludeIgnored)
+            using (var store = DataStoreFactory.GetStore(typeof(CustomRedirect)))
             {
-                customRedirects = from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
-                    where s.State.Equals((int) GetState.Saved)
-                    select s;
+                return
+                    store.Items<CustomRedirect>()
+                        .Where(r => (!excludeIgnored) || r.State.Equals((int)GetState.Saved))
+                        .ToList();
             }
-            else
-            {
-                customRedirects = from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
-                    select s;
-            }
-            return customRedirects != null ? customRedirects.ToList() : null;
         }
 
         public List<CustomRedirect> GetIgnoredRedirect()
         {
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-
-            IQueryable<CustomRedirect> customRedirects =
-                from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
-                where s.State.Equals(GetState.Ignored)
-                select s;
-            return customRedirects.ToList();
+            using (var store = DataStoreFactory.GetStore(typeof(CustomRedirect)))
+            {
+                IQueryable<CustomRedirect> customRedirects =
+                    from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
+                    where s.State.Equals(GetState.Ignored)
+                    select s;
+                return customRedirects.ToList();
+            }
         }
 
         public void UnignoreRedirect()
@@ -75,16 +70,18 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
         /// <summary>
         ///     Delete CustomObject object from Data Store that has given "OldUrl" property
         /// </summary>
-        /// <param name="currentCustomRedirect"></param>
+        /// <param name="oldUrl"></param>
         public void DeleteCustomRedirect(string oldUrl)
         {
             // Get hold of the datastore
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-
-            //find object with matching property "OldUrl"
-            CustomRedirect match = store.Find<CustomRedirect>(OLD_URL_PROPERTY_NAME, oldUrl.ToLower()).SingleOrDefault();
-            if (match != null)
-                store.Delete(match);
+            using (var store = DataStoreFactory.GetStore(typeof(CustomRedirect)))
+            {
+                //find object with matching property "OldUrl"
+                CustomRedirect match =
+                    store.Find<CustomRedirect>(OldUrlPropertyName, oldUrl.ToLower()).SingleOrDefault();
+                if (match != null)
+                    store.Delete(match);
+            }
         }
 
         /// <summary>
@@ -93,23 +90,27 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
         public void DeleteAllCustomRedirects()
         {
             // In order to avoid a database timeout, we delete the items one by one.
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-            foreach (CustomRedirect redirect in GetCustomRedirects(false))
+            using (var store = DataStoreFactory.GetStore(typeof(CustomRedirect)))
             {
-                store.Delete(redirect);
+                foreach (CustomRedirect redirect in GetCustomRedirects(false))
+                {
+                    store.Delete(redirect);
+                }
             }
         }
 
         public int DeleteAllIgnoredRedirects()
         {
             // In order to avoid a database timeout, we delete the items one by one.
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-            List<CustomRedirect> ignoredRedirects = GetIgnoredRedirect();
-            foreach (CustomRedirect redirect in ignoredRedirects)
+            using (var store = DataStoreFactory.GetStore(typeof(CustomRedirect)))
             {
-                store.Delete(redirect);
+                List<CustomRedirect> ignoredRedirects = GetIgnoredRedirect();
+                foreach (CustomRedirect redirect in ignoredRedirects)
+                {
+                    store.Delete(redirect);
+                }
+                return ignoredRedirects.Count();
             }
-            return ignoredRedirects.Count();
         }
 
 
@@ -120,12 +121,12 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
         /// <returns></returns>
         public List<CustomRedirect> SearchCustomRedirects(string searchWord)
         {
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-            IQueryable<CustomRedirect> CustomRedirects = from s in store.Items<CustomRedirect>()
-                where s.NewUrl.Contains(searchWord) || s.OldUrl.Contains(searchWord)
-                select s;
-
-            return CustomRedirects != null ? CustomRedirects.ToList() : null;
+            using (var store = DataStoreFactory.GetStore(typeof(CustomRedirect)))
+            {
+                return (from s in store.Items<CustomRedirect>()
+                        where s.NewUrl.Contains(searchWord) || s.OldUrl.Contains(searchWord)
+                        select s).ToList();
+            }
         }
     }
 }
