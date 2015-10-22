@@ -32,14 +32,16 @@ namespace Creuna.Episerver.RedirectHandler.Core.Logging
             get { return instance; }
         }
 
+        private readonly object SyncRoot = new object();
+
         private List<LogEvent> LogQueue { get; set; }
 
         public virtual void LogRequest(string oldUrl, string referrer)
         {
             int bufferSize = _redirectConfiguration.BufferSize;
-            if (LogQueue.Count >= bufferSize)
+            lock (SyncRoot)
             {
-                lock (LogQueue)
+                if (LogQueue.Count >= bufferSize)
                 {
                     try
                     {
@@ -53,8 +55,8 @@ namespace Creuna.Episerver.RedirectHandler.Core.Logging
                         LogQueue = new List<LogEvent>();
                     }
                 }
+                LogQueue.Add(new LogEvent(oldUrl, DateTime.Now, referrer));
             }
-            LogQueue.Add(new LogEvent(oldUrl, DateTime.Now, referrer));
         }
 
         private void LogRequests(List<LogEvent> logEvents)
