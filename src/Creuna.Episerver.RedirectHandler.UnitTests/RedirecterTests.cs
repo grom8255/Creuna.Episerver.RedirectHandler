@@ -62,7 +62,7 @@ namespace Creuna.Episerver.RedirectHandler
                 }
 
                 [Test]
-                public void _then_only_the_query_string_of_the_redirect_is_appended_to_the_new_url()
+                public void _then_the_query_string_is_forwarded()
                 {
                     _sut.Redirect(string.Empty, new Uri("http://www.website.com/no/look/to/norway?test=xyz", UriKind.Absolute))
                         .NewUrl.ShouldEqual("/new/look/to/norway?redirected=1&test=xyz");

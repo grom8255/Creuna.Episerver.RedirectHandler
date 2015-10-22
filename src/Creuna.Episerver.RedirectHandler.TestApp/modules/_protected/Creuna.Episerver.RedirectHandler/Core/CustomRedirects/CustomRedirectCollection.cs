@@ -38,18 +38,6 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         #endregion
 
-        #region IndexOf
-
-        public int IndexOf(CustomRedirect customRedirect)
-        {
-            for (int i = 0; i < List.Count; i++)
-                if (this[i] == customRedirect) // Found it
-                    return i;
-            return -1;
-        }
-
-        #endregion
-
         #region Insert
 
         public void Insert(int index, CustomRedirect customRedirect)
@@ -115,7 +103,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             string querystring)
         {
             var newUrl = customRedirect.AppendMatchToNewUrl
-                ? AppendMatch(customRedirect, oldUri, absolutePath)
+                ? AppendMatch(customRedirect, absolutePath)
                 : customRedirect.NewUrl;
 
             if (customRedirect.IncludeQueryString && querystring.Length > 1)
@@ -123,21 +111,20 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             return customRedirect.WithNewUrl(newUrl);
         }
 
-        private static string AppendMatch(CustomRedirect customRedirect, string uriToRedirect, string absolutePath)
+        private static string AppendMatch(CustomRedirect customRedirect, string absolutePath)
         {
             var newUrl = new Uri(customRedirect.NewUrl, UriKind.RelativeOrAbsolute);
-            var oldUri = new Uri(uriToRedirect, UriKind.RelativeOrAbsolute);
-            var uriToAppend = GetPathFrom(GetUriToAppend(uriToRedirect, absolutePath));
-            var querystring = GetCompleteQueryFrom(customRedirect, newUrl, oldUri);
+            var oldUri = new Uri(absolutePath, UriKind.RelativeOrAbsolute);
+            var uriToAppend = GetPathFromLocalUri(oldUri).Substring(customRedirect.OldUrl.Length);
+            var querystring = GetQueryFrom(newUrl);
             return CombineUri(newUrl, uriToAppend) + (string.IsNullOrWhiteSpace(querystring) ? string.Empty : string.Concat("?", querystring));
         }
 
-        private static Uri GetUriToAppend(string uriToRedirect, string absolutePath)
+        public static string GetOnlyPathFrom(Uri oldUri)
         {
-            var uri = new Uri(uriToRedirect, UriKind.RelativeOrAbsolute);
-            if (uri.IsAbsoluteUri)
-                return new Uri(absolutePath, UriKind.RelativeOrAbsolute);
-            return new Uri(absolutePath.Substring(uriToRedirect.Length), UriKind.RelativeOrAbsolute);
+            if (oldUri.IsAbsoluteUri)
+                return oldUri.PathAndQuery;
+            return GetPathFromLocalUri(oldUri);
         }
 
         private static string CombineUri(Uri newUrl, string uriToAppend)
@@ -145,14 +132,6 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             var path = GetPathFrom(newUrl);
             return path.EndsWith("/", StringComparison.OrdinalIgnoreCase) && uriToAppend.StartsWith("/", StringComparison.OrdinalIgnoreCase)
                 ? path + uriToAppend.Substring(1) : path + uriToAppend;
-        }
-
-        private static string GetCompleteQueryFrom(CustomRedirect redirect, Uri newUrl, Uri oldUri)
-        {
-            var a = GetQueryFrom(newUrl).Split(new[] { "&" }, StringSplitOptions.RemoveEmptyEntries)
-                .Concat((redirect.IncludeQueryString ? GetQueryFrom(oldUri) : "").Split(new[] { "&" },
-                    StringSplitOptions.RemoveEmptyEntries));
-            return string.Join("&", a);
         }
 
         private static string GetPathFrom(Uri newUrl)

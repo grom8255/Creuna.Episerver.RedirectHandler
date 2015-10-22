@@ -66,16 +66,16 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             return redirect;
         }
 
+        private CustomRedirect GetRedirect(Uri urlNotFound)
+        {
+            return _customRedirects.Find(urlNotFound);
+        }
+
         private static void AddUrlToTouchedRedirects(Dictionary<CustomRedirect, List<string>> touchedRedirects, CustomRedirect redirect)
         {
             if (!touchedRedirects.ContainsKey(redirect))
                 touchedRedirects.Add(redirect, new List<string>());
             touchedRedirects[redirect].Add(redirect.NewUrl);
-        }
-
-        private CustomRedirect GetRedirect(Uri urlNotFound)
-        {
-            return _customRedirects.Find(urlNotFound);
         }
     }
 }
