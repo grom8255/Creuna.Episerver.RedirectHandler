@@ -1,6 +1,7 @@
 ﻿using System;
 using Creuna.Episerver.RedirectHandler.Core.Configuration;
 using Creuna.Episerver.RedirectHandler.Core.CustomRedirects;
+using Creuna.Episerver.RedirectHandler.Core.Logging;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Should;
@@ -21,6 +22,7 @@ namespace Creuna.Episerver.RedirectHandler
             _configuration = new RedirectConfiguration();
             _redirects = new CustomRedirectCollection();
             _sut = new Redirecter(_redirects, _configuration);
+            RequestLogger.Instance = new RequestLogger(_configuration);
         }
 
         public class When_a_redirect_is_set_up_with_append : RedirecterTests
@@ -45,7 +47,8 @@ namespace Creuna.Episerver.RedirectHandler
                 [Test]
                 public void _then_only_the_query_string_of_the_redirect_is_appended_to_the_new_url()
                 {
-                    _sut.Redirect(string.Empty, new Uri("http://www.website.com/no/look/to/norway?test=xyz", UriKind.Absolute))
+                    _sut.Redirect(string.Empty, new Uri("http://www.website.com/no/look/to/norway?test=xyz", 
+                        UriKind.Absolute))
                         .NewUrl.ShouldEqual("/new/look/to/norway?redirected=1");
                 }
             }
@@ -164,6 +167,33 @@ namespace Creuna.Episerver.RedirectHandler
                     "/b", false, true, true));
                 _sut.Redirect("", new Uri("http://www.incoming.com/" + "a?x=y"))
                     .NewUrl.ShouldEqual("/b?x=y");
+            }
+        }
+
+        public class When_a_redirect_query_string_and_append_configured : RedirecterTests
+        {
+            [Test]
+            public void _with_not_exact_match_No_duplication_should_occur()
+            {
+                _redirects.Add(new CustomRedirect("/no", "/newurl",
+                    exactMatch: false,
+                    appendMatchToNewUrl: true,
+                    includeQueryString: true));
+
+                _sut.Redirect("", new Uri("http://www.somewhere.com/no/path?param=value"))
+                    .NewUrl.ShouldEqual("/newurl/path?param=value");
+            }
+
+            [Test]
+            public void _with_exact_match_No_duplication_should_occur()
+            {
+                _redirects.Add(new CustomRedirect("/no", "/newurl",
+                    exactMatch: true,
+                    appendMatchToNewUrl: true,
+                    includeQueryString: true));
+
+                _sut.Redirect("", new Uri("http://www.somewhere.com/no?param=value"))
+                    .NewUrl.ShouldEqual("/newurl?param=value");
             }
         }
 

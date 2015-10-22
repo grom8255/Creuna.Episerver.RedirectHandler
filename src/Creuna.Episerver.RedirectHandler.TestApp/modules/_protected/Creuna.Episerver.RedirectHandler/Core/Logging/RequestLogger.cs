@@ -1,24 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Creuna.Episerver.RedirectHandler.Core.Configuration;
 using Creuna.Episerver.RedirectHandler.Core.Data;
 using EPiServer.Logging;
+using EPiServer.ServiceLocation;
 
 namespace Creuna.Episerver.RedirectHandler.Core.Logging
 {
     public class RequestLogger
     {
-        private static readonly RequestLogger instance = new RequestLogger();
+        private readonly RedirectConfiguration _redirectConfiguration;
+        private static readonly RequestLogger instance = ServiceLocator.Current.GetInstance<RequestLogger>();
+        private static RequestLogger instanceOverride = null;
         private static readonly ILogger Logger = LogManager.GetLogger();
 
-        private RequestLogger()
+        public RequestLogger(RedirectConfiguration redirectConfiguration)
         {
+            _redirectConfiguration = redirectConfiguration;
             LogQueue = new List<LogEvent>();
         }
 
         public static RequestLogger Instance
         {
-            get { return InternalInstance; }
+            get { return instanceOverride ?? InternalInstance; }
+            set { instanceOverride = value; }
         }
 
         internal static RequestLogger InternalInstance
@@ -26,14 +32,16 @@ namespace Creuna.Episerver.RedirectHandler.Core.Logging
             get { return instance; }
         }
 
+        private readonly object SyncRoot = new object();
+
         private List<LogEvent> LogQueue { get; set; }
 
-        public void LogRequest(string oldUrl, string referrer)
+        public virtual void LogRequest(string oldUrl, string referrer)
         {
-            int bufferSize = Configuration.RedirectConfiguration.BufferSize;
-            if (LogQueue.Count >= bufferSize)
+            int bufferSize = _redirectConfiguration.BufferSize;
+            lock (SyncRoot)
             {
-                lock (LogQueue)
+                if (LogQueue.Count >= bufferSize)
                 {
                     try
                     {
@@ -47,15 +55,15 @@ namespace Creuna.Episerver.RedirectHandler.Core.Logging
                         LogQueue = new List<LogEvent>();
                     }
                 }
+                LogQueue.Add(new LogEvent(oldUrl, DateTime.Now, referrer));
             }
-            LogQueue.Add(new LogEvent(oldUrl, DateTime.Now, referrer));
         }
 
         private void LogRequests(List<LogEvent> logEvents)
         {
             Logger.Debug("Logging 404 errors to database");
-            int bufferSize = Configuration.RedirectConfiguration.BufferSize;
-            int threshold = Configuration.RedirectConfiguration.ThreshHold;
+            int bufferSize = _redirectConfiguration.BufferSize;
+            int threshold = _redirectConfiguration.ThreshHold;
             DateTime start = logEvents.First().Requested;
             DateTime end = logEvents.Last().Requested;
             int diff = (end - start).Seconds;

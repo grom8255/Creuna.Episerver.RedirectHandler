@@ -173,13 +173,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Creuna.Episerver.RedirectHandler.TestApp\modules\_protected\Creuna.Episerver.RedirectHandler\Creuna.Episerver.RedirectHandler.csproj">
-      <Project>{DFBF0553-7E44-44BF-A59F-F94F9493FC17}</Project>
-      <Name>BVNetwork.404Handler</Name>
-    </ProjectReference>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+    <ProjectReference Include="..\Creuna.Episerver.RedirectHandler.TestApp\modules\_protected\Creuna.Episerver.RedirectHandler\Creuna.Episerver.RedirectHandler.csproj">
+      <Project>{dfbf0553-7e44-44bf-a59f-f94f9493fc17}</Project>
+      <Name>Creuna.Episerver.RedirectHandler</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

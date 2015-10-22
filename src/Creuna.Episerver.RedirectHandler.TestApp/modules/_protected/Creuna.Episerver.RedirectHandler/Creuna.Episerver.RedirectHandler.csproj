@@ -72,7 +72,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
-    <DebugSymbols>false</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
     <NoWarn>
@@ -82,7 +82,7 @@
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -90,6 +90,7 @@
     <Compile Include="Core\CustomRedirects\DictionaryCachedRedirecter.cs" />
     <Compile Include="Core\CustomRedirects\ICachedRedirecter.cs" />
     <Compile Include="Core\CustomRedirects\IRedirecter.cs" />
+    <Compile Include="Core\CustomRedirects\RedirecterFactory.cs" />
     <Compile Include="Core\RedirectAttempt.cs" />
     <Compile Include="Core\CustomRedirects\Redirecter.cs" />
     <Compile Include="Core\Initialization\Custom404HandlerInitialization.cs" />
@@ -184,7 +185,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <None Include="CustomRedirects.config" />
-    <Content Include="web.config.transform" />
     <None Include="module.config">
       <SubType>Designer</SubType>
     </None>
@@ -263,10 +263,6 @@
     </Reference>
     <Reference Include="Ionic.Zip, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\DotNetZip.1.9.1.8\lib\net20\Ionic.Zip.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -378,7 +374,7 @@
     <!-- Create the package -->
     <PropertyGroup>
       <NugetCommand>
-        "$(NuGetExe)" pack "$(NuspecFile)" -OutputDirectory "$(OutDir.TrimEnd('\\'))" -Version "$(Version)" -Properties Configuration=$(Configuration)
+        "$(NuGetExe)" pack "$(NuspecFile)" -Symbols -OutputDirectory "$(OutDir.TrimEnd('\\'))" -Version "$(Version)" -Properties Configuration=$(Configuration)
       </NugetCommand>
     </PropertyGroup>
     <Exec Command="$(NugetCommand)" />
