@@ -25,11 +25,13 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
     public class NotFoundRedirectController : Controller
     {
         private readonly CustomRedirectHandler _customRedirectHandler;
+        private readonly DataStoreHandler _dataStoreHandler;
         private static readonly ILogger Logger = LogManager.GetLogger();
 
-        public NotFoundRedirectController(CustomRedirectHandler customRedirectHandler)
+        public NotFoundRedirectController(CustomRedirectHandler customRedirectHandler, DataStoreHandler dataStoreHandler)
         {
             _customRedirectHandler = customRedirectHandler;
+            _dataStoreHandler = dataStoreHandler;
         }
 
         public static string GadgetEditMenuName
@@ -140,8 +142,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
         {
             Logger.Debug("Adding redirect: '{0}' -> '{1}'", oldUrl, newUrl);
             // Get hold of the datastore
-            var dsHandler = new DataStoreHandler();
-            dsHandler.SaveCustomRedirect(
+            _dataStoreHandler.SaveCustomRedirect(
                 new CustomRedirect(oldUrl.Trim(), newUrl.Trim(),
                 skipWildCardAppend != null,
                 exactMatch != null,
@@ -159,8 +160,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
 
             // add redirect to dds with state "ignored"
             var redirect = CustomRedirect.CreateIgnored(oldUrl);
-            var dsHandler = new DataStoreHandler();
-            dsHandler.SaveCustomRedirect(redirect);
+            _dataStoreHandler.SaveCustomRedirect(redirect);
             DataStoreEventHandlerHook.DataStoreUpdated();
 
             List<CustomRedirect> customRedirectList = GetSuggestions(searchWord).ToList();
@@ -180,8 +180,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
 
             Logger.Debug("Deleting redirect: '{0}'", oldUrl);
 
-            var dsHandler = new DataStoreHandler();
-            dsHandler.DeleteCustomRedirect(oldUrl);
+            _dataStoreHandler.DeleteCustomRedirect(oldUrl);
             DataStoreEventHandlerHook.DataStoreUpdated();
             List<CustomRedirect> customRedirectList = GetData(searchWord);
             //Make sure that the searchinfo is contained after an item has been deleted - if there is any.
@@ -220,8 +219,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
         public ActionResult Ignored()
         {
             CheckAccess();
-            var dsHandler = new DataStoreHandler();
-            List<CustomRedirect> ignoredRedirects = dsHandler.GetIgnoredRedirect();
+            List<CustomRedirect> ignoredRedirects = _dataStoreHandler.GetIgnoredRedirect();
             return View("Ignored", ignoredRedirects);
         }
 
@@ -229,8 +227,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
         public ActionResult Unignore(string url)
         {
             CheckAccess();
-            var dsHandler = new DataStoreHandler();
-            dsHandler.DeleteCustomRedirect(url);
+            _dataStoreHandler.DeleteCustomRedirect(url);
             return Ignored();
         }
 
@@ -245,8 +242,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
         public ActionResult DeleteAllIgnored()
         {
             CheckAccess();
-            var dsHandler = new DataStoreHandler();
-            int deleteCount = dsHandler.DeleteAllIgnoredRedirects();
+            int deleteCount = _dataStoreHandler.DeleteAllIgnoredRedirects();
             string infoText = string.Format(LocalizationService.Current.GetString("/gadget/redirects/ignoredremoved"),
                 deleteCount);
             ViewData["information"] = infoText;
@@ -328,10 +324,9 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
         /// <returns></returns>
         public List<CustomRedirect> GetData(String searchWord)
         {
-            var dsHandler = new DataStoreHandler();
             return string.IsNullOrEmpty(searchWord)
-                ? dsHandler.GetCustomRedirects(true)
-                : dsHandler.SearchCustomRedirects(searchWord);
+                ? _dataStoreHandler.GetCustomRedirects(true)
+                : _dataStoreHandler.SearchCustomRedirects(searchWord);
         }
 
         public IEnumerable<CustomRedirect> GetSuggestions(String searchWord)

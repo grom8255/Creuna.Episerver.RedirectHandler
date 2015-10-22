@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Creuna.Episerver.RedirectHandler.Core.CustomRedirects;
 using EPiServer.Data.Dynamic;
+using EPiServer.ServiceLocation;
 
 namespace Creuna.Episerver.RedirectHandler.Core.Data
 {
+    [ServiceConfiguration(typeof(DataStoreHandler), Lifecycle = ServiceInstanceScope.Singleton)]
     public class DataStoreHandler
     {
+        private readonly IDataStoreFactory _dataStoreFactory;
+
         public enum GetState
         {
             Saved = 0,
@@ -14,102 +19,121 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
             Ignored = 2
         };
 
-        private const string OLD_URL_PROPERTY_NAME = "OldUrl";
-
-        public void SaveCustomRedirect(CustomRedirect currentCustomRedirect)
+        public DataStoreHandler(IDataStoreFactory dataStoreFactory)
         {
-            // Get hold of the datastore
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-            //check if there is an exisiting object with matching property "OldUrl"
-            CustomRedirect match =
-                store.Find<CustomRedirect>(OLD_URL_PROPERTY_NAME, currentCustomRedirect.OldUrl.ToLower())
-                    .SingleOrDefault();
-            //if there is a match, replace the value.
-            if (match != null)
-                store.Save(currentCustomRedirect, match.Id);
-            else
-                store.Save(currentCustomRedirect);
+            _dataStoreFactory = dataStoreFactory;
         }
 
+        private const string OLD_URL_PROPERTY_NAME = "OldUrl";
+
+        public virtual void SaveCustomRedirect(CustomRedirect currentCustomRedirect)
+        {
+            // Get hold of the datastore
+            using (var store = GetStore())
+            {
+                //check if there is an exisiting object with matching property "OldUrl"
+                CustomRedirect match =
+                    store.Find<CustomRedirect>(OLD_URL_PROPERTY_NAME, currentCustomRedirect.OldUrl.ToLower())
+                        .SingleOrDefault();
+                //if there is a match, replace the value.
+                if (match != null)
+                    store.Save(currentCustomRedirect, match.Id);
+                else
+                    store.Save(currentCustomRedirect);
+            }
+        }
+
+        protected virtual DynamicDataStore GetStore()
+        {
+            return _dataStoreFactory.GetStore(typeof(CustomRedirect));
+        }
 
         /// <summary>
         ///     Returns a list of all CustomRedirect objects in the Dynamic Data Store.
         /// </summary>
         /// <returns></returns>
-        public List<CustomRedirect> GetCustomRedirects(bool excludeIgnored)
+        public virtual List<CustomRedirect> GetCustomRedirects(bool excludeIgnored)
         {
             // IEnumerable<CustomRedirect> customRedirects = null;
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-            IEnumerable<CustomRedirect> customRedirects;
-            if (excludeIgnored)
+            using (var store = GetStore())
             {
-                customRedirects = from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
-                    where s.State.Equals((int) GetState.Saved)
-                    select s;
+                IEnumerable<CustomRedirect> customRedirects;
+                if (excludeIgnored)
+                {
+                    customRedirects = from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
+                        where s.State.Equals((int) GetState.Saved)
+                        select s;
+                }
+                else
+                {
+                    customRedirects = from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
+                        select s;
+                }
+                return customRedirects != null ? customRedirects.ToList() : null;
             }
-            else
-            {
-                customRedirects = from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
-                    select s;
-            }
-            return customRedirects != null ? customRedirects.ToList() : null;
         }
 
-        public List<CustomRedirect> GetIgnoredRedirect()
+        public virtual List<CustomRedirect> GetIgnoredRedirect()
         {
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-
-            IQueryable<CustomRedirect> customRedirects =
-                from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
-                where s.State.Equals(GetState.Ignored)
-                select s;
-            return customRedirects.ToList();
+            using (var store = GetStore())
+            {
+                IQueryable<CustomRedirect> customRedirects =
+                    from s in store.Items<CustomRedirect>().OrderBy(cr => cr.OldUrl)
+                    where s.State.Equals(GetState.Ignored)
+                    select s;
+                return customRedirects.ToList();
+            }
         }
 
-        public void UnignoreRedirect()
+        private void UnignoreRedirect()
         {
             // TODO
         }
 
-
         /// <summary>
         ///     Delete CustomObject object from Data Store that has given "OldUrl" property
         /// </summary>
-        /// <param name="currentCustomRedirect"></param>
-        public void DeleteCustomRedirect(string oldUrl)
+        /// <param name="oldUrl"></param>
+        public virtual void DeleteCustomRedirect(string oldUrl)
         {
             // Get hold of the datastore
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-
-            //find object with matching property "OldUrl"
-            CustomRedirect match = store.Find<CustomRedirect>(OLD_URL_PROPERTY_NAME, oldUrl.ToLower()).SingleOrDefault();
-            if (match != null)
-                store.Delete(match);
+            using (var store = GetStore())
+            {
+                //find object with matching property "OldUrl"
+                CustomRedirect match =
+                    store.Find<CustomRedirect>(OLD_URL_PROPERTY_NAME, oldUrl.ToLower()).SingleOrDefault();
+                if (match != null)
+                    store.Delete(match);
+            }
         }
 
         /// <summary>
         ///     Delete all CustomRedirect objects
         /// </summary>
-        public void DeleteAllCustomRedirects()
+        public virtual void DeleteAllCustomRedirects()
         {
             // In order to avoid a database timeout, we delete the items one by one.
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-            foreach (CustomRedirect redirect in GetCustomRedirects(false))
+            using (var store = GetStore())
             {
-                store.Delete(redirect);
+                foreach (CustomRedirect redirect in GetCustomRedirects(false))
+                {
+                    store.Delete(redirect);
+                }
             }
         }
 
-        public int DeleteAllIgnoredRedirects()
+        public virtual int DeleteAllIgnoredRedirects()
         {
             // In order to avoid a database timeout, we delete the items one by one.
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-            List<CustomRedirect> ignoredRedirects = GetIgnoredRedirect();
-            foreach (CustomRedirect redirect in ignoredRedirects)
+            using (var store = GetStore())
             {
-                store.Delete(redirect);
+                List<CustomRedirect> ignoredRedirects = GetIgnoredRedirect();
+                foreach (CustomRedirect redirect in ignoredRedirects)
+                {
+                    store.Delete(redirect);
+                }
+                return ignoredRedirects.Count();
             }
-            return ignoredRedirects.Count();
         }
 
 
@@ -118,14 +142,16 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
         /// </summary>
         /// <param name="searchWord"></param>
         /// <returns></returns>
-        public List<CustomRedirect> SearchCustomRedirects(string searchWord)
+        public virtual List<CustomRedirect> SearchCustomRedirects(string searchWord)
         {
-            DynamicDataStore store = DataStoreFactory.GetStore(typeof (CustomRedirect));
-            IQueryable<CustomRedirect> CustomRedirects = from s in store.Items<CustomRedirect>()
-                where s.NewUrl.Contains(searchWord) || s.OldUrl.Contains(searchWord)
-                select s;
+            using (var store = GetStore())
+            {
+                IQueryable<CustomRedirect> customRedirects = from s in store.Items<CustomRedirect>()
+                    where s.NewUrl.Contains(searchWord) || s.OldUrl.Contains(searchWord)
+                    select s;
 
-            return CustomRedirects != null ? CustomRedirects.ToList() : null;
+                return customRedirects != null ? customRedirects.ToList() : null;
+            }
         }
     }
 }

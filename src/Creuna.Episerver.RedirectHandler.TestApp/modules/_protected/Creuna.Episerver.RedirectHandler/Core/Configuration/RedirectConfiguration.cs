@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using System.Globalization;
+using EPiServer.ServiceLocation;
 
 namespace Creuna.Episerver.RedirectHandler.Core.Configuration
 {
@@ -29,10 +30,11 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
     /// <summary>
     ///     Configuration utility class for the custom 404 handler
     /// </summary>
+    [ServiceConfiguration(typeof(RedirectConfiguration), Lifecycle = ServiceInstanceScope.Singleton)]
     public class RedirectConfiguration
     {
         private const string DEF_REDIRECTS_XML_FILE = "~/CustomRedirects.config";
-        private const string DEF_NOTFOUND_PAGE = "~/bvn/filenotfound/notfound.aspx";
+        private const string DEF_NOTFOUND_PAGE = "~/notfound.aspx";
         private const LoggerMode DEF_LOGGING = LoggerMode.On;
         private const int DEF_BUFFER_SIZE = 30;
         private const int DEF_THRESHHOLD = 5;
@@ -51,7 +53,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         ///     Tells the errorhandler to use EPiServer Exception Manager
         ///     to render unhandled errors. Defaults to False.
         /// </summary>
-        public bool FallbackToEPiServerErrorExceptionManager
+        public virtual bool FallbackToEPiServerErrorExceptionManager
         {
             get
             {
@@ -70,7 +72,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         /// <summary>
         ///     The mode to use for the 404 handler
         /// </summary>
-        public FileNotFoundMode FileNotFoundHandlerMode
+        public virtual FileNotFoundMode FileNotFoundHandlerMode
         {
             get
             {
@@ -97,7 +99,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         /// <summary>
         ///     The mode to use for the 404 handler
         /// </summary>
-        public LoggerMode Logging
+        public virtual LoggerMode Logging
         {
             get { return bool.Parse(ConfigurationManager.AppSettings["RedirectLogging"] ?? "True") ? LoggerMode.On : LoggerMode.Off; }
         }
@@ -106,7 +108,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         /// <summary>
         ///     The virtual path to the 404 handler aspx file.
         /// </summary>
-        public string FileNotFoundHandlerPage
+        public virtual string FileNotFoundHandlerPage
         {
             get { return ConfigurationManager.AppSettings["FileNotFoundHandlerPage"] ?? DEF_NOTFOUND_PAGE; }
         }
@@ -115,7 +117,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         ///     The relative path to the custom redirects xml file, including the name of the
         ///     xml file. The 404 handler will map the result to a server path.
         /// </summary>
-        public static string CustomRedirectsXmlFile
+        public virtual string CustomRedirectsXmlFile
         {
             get
             {
@@ -127,7 +129,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         /// <summary>
         ///     BufferSize for logging of redirects.
         /// </summary>
-        public static int BufferSize
+        public virtual int BufferSize
         {
             get
             {
@@ -148,7 +150,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         /// <summary>
         ///     ThreshHold value for redirect logging.
         /// </summary>
-        public static int ThreshHold
+        public virtual int ThreshHold
         {
             get
             {

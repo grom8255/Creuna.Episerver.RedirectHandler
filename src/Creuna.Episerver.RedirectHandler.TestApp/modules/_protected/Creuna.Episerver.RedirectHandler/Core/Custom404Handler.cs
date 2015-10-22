@@ -7,10 +7,12 @@ using System.Web.Mvc;
 using Creuna.Episerver.RedirectHandler.Core.Configuration;
 using Creuna.Episerver.RedirectHandler.Core.CustomRedirects;
 using EPiServer.Logging;
+using EPiServer.ServiceLocation;
 using EPiServer.Web;
 
 namespace Creuna.Episerver.RedirectHandler.Core
 {
+    [ServiceConfiguration(typeof(Custom404Handler), Lifecycle = ServiceInstanceScope.Singleton)]
     public class Custom404Handler
     {
         private readonly CustomRedirectHandler _customRedirectHandler;
@@ -36,12 +38,12 @@ namespace Creuna.Episerver.RedirectHandler.Core
 
         private static readonly ILogger Logger = LogManager.GetLogger();
 
-        public RedirectAttempt HandleRequest(string referer, Uri urlNotFound)
+        public virtual RedirectAttempt HandleRequest(string referer, Uri urlNotFound)
         {
             return _customRedirectHandler.HandleRequest(referer, urlNotFound);
         }
 
-        public void FileNotFoundHandler(object sender, EventArgs evt)
+        public virtual void FileNotFoundHandler(object sender, EventArgs evt)
         {
             // Check if this should be enabled
             if (_redirectConfiguration.FileNotFoundHandlerMode == FileNotFoundMode.Off)
