@@ -14,12 +14,14 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
     public class CustomRedirectHandler
     {
         private readonly RedirectConfiguration _redirectConfiguration;
+        private readonly DataStoreHandler _dataStoreHandler;
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(CustomRedirectHandler));
         private IRedirecter _redirecter;
 
-        public CustomRedirectHandler(RedirectConfiguration redirectConfiguration)
+        public CustomRedirectHandler(RedirectConfiguration redirectConfiguration, DataStoreHandler dataStoreHandler)
         {
             _redirectConfiguration = redirectConfiguration;
+            _dataStoreHandler = dataStoreHandler;
             _redirecter = CreateRedirecter();
         }
 
@@ -38,11 +40,10 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         public virtual void SaveCustomRedirects(CustomRedirectCollection redirects)
         {
             Logger.Log(Level.Debug, "Saving custom redirects");
-            var dynamicHandler = new DataStoreHandler();
             foreach (CustomRedirect redirect in redirects)
             {
                 // Add redirect 
-                dynamicHandler.SaveCustomRedirect(redirect);
+                _dataStoreHandler.SaveCustomRedirect(redirect);
             }
             DataStoreEventHandlerHook.DataStoreUpdated();
         }
@@ -53,10 +54,9 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         /// </summary>
         protected virtual CustomRedirectCollection LoadCustomRedirects()
         {
-            var dynamicHandler = new DataStoreHandler();
             var customRedirects = new CustomRedirectCollection();
 
-            foreach (var redirect in dynamicHandler.GetCustomRedirects(false))
+            foreach (var redirect in _dataStoreHandler.GetCustomRedirects(false))
                 customRedirects.Add(redirect);
 
             return customRedirects;
