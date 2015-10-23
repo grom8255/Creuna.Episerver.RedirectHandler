@@ -135,7 +135,6 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
             }
         }
 
-
         /// <summary>
         ///     Find all CustomRedirect objects which has a OldUrl og NewUrl that contains the search word.
         /// </summary>
@@ -147,7 +146,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
             {
                 return (from s in store.Items<CustomRedirect>()
                         where s.NewUrl.Contains(searchWord) || s.OldUrl.Contains(searchWord)
-                        select s).ToList();
+                        select s).OrderBy(cr => cr.OldUrl).ToList();
             }
         }
     }
