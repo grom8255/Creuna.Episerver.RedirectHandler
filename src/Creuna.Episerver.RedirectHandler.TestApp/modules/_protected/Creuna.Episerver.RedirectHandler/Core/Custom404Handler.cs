@@ -201,9 +201,13 @@ namespace Creuna.Episerver.RedirectHandler.Core
                 {
                     // Strip away host name in front, if local redirect
 
-                    string hostUrl = SiteDefinition.Current.SiteUrl.ToString();
-                    if (refererUrl.StartsWith(hostUrl))
-                        refererUrl = refererUrl.Remove(0, hostUrl.Length);
+                    var siteDefinition = SiteDefinition.Current;
+                    if (siteDefinition != null && siteDefinition.SiteUrl != null)
+                    {
+                        string hostUrl = siteDefinition.SiteUrl.ToString();
+                        if (refererUrl.StartsWith(hostUrl))
+                            refererUrl = refererUrl.Remove(0, hostUrl.Length);
+                    }
                 }
             }
             return refererUrl;

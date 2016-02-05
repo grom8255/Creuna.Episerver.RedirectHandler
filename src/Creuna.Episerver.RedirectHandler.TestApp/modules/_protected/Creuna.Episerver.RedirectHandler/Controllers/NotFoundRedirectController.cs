@@ -72,7 +72,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
             List<CustomRedirect> customRedirectList;
             if (isSuggestions.HasValue && isSuggestions.Value)
             {
-                customRedirectList = GetSuggestions(searchWord).ToList();
+                customRedirectList = GetSuggestions().ToList();
 
                 suggestion = true;
                 RedirectIndexViewData viewData = GetRedirectIndexViewData(pageNumber, customRedirectList,
@@ -103,7 +103,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
             dbAccess.DeleteRowsForRequest(oldUrl);
 
             //
-            List<CustomRedirect> customRedirectList = GetSuggestions(null).ToList();
+            List<CustomRedirect> customRedirectList = GetSuggestions().ToList();
             string actionInfo = string.Format(LocalizationService.Current.GetString("/gadget/redirects/saveredirect"),
                 oldUrl, newUrl);
             DataStoreEventHandlerHook.DataStoreUpdated();
@@ -163,7 +163,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
             _dataStoreHandler.SaveCustomRedirect(redirect);
             DataStoreEventHandlerHook.DataStoreUpdated();
 
-            List<CustomRedirect> customRedirectList = GetSuggestions(searchWord).ToList();
+            List<CustomRedirect> customRedirectList = GetSuggestions().ToList();
             string actionInfo = string.Format(
                 LocalizationService.Current.GetString("/gadget/redirects/ignoreredirect"), oldUrl);
             RedirectIndexViewData viewData = GetRedirectIndexViewData(pageNumber, customRedirectList, actionInfo,
@@ -329,10 +329,9 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
                 : _dataStoreHandler.SearchCustomRedirects(searchWord);
         }
 
-        public IEnumerable<CustomRedirect> GetSuggestions(String searchWord)
+        public IEnumerable<CustomRedirect> GetSuggestions()
         {
             return DataHandler.GetRedirects()
-                .Where(r => r.Key.IndexOf(searchWord, StringComparison.OrdinalIgnoreCase) > -1)
                 .Select(redirect =>
                 new CustomRedirect(
                     redirect.Key,

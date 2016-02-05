@@ -12,7 +12,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
 {
     public class DataAccessBaseEx : DataAccessBase
     {
-        internal const string RedirectsTable = "[dbo].[Creuna.RedirectHandler.NotFoundRequests]";
+        internal const string RedirectsTable = "[dbo].[BVN.NotFoundRequests]";
         internal const string VersionStoredProc = "[dbo].[Creuna.RedirectHandler.Version]";
 
         private static readonly ILogger Logger = LogManager.GetLogger();
