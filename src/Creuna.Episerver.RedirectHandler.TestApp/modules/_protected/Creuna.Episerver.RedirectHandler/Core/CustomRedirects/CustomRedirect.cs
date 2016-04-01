@@ -19,7 +19,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         public CustomRedirect(string oldUrl, string newUrl, bool appendMatchToNewUrl, bool exactMatch,
             bool includeQueryString, int state)
-            : this(oldUrl, newUrl, appendMatchToNewUrl, exactMatch, includeQueryString, 0, 0)
+            : this(oldUrl, newUrl, appendMatchToNewUrl, exactMatch, includeQueryString, state, 0)
         {
 
         }
