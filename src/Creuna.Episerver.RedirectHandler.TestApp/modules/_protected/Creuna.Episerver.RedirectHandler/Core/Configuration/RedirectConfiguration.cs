@@ -38,7 +38,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         private const LoggerMode DEF_LOGGING = LoggerMode.On;
         private const int DEF_BUFFER_SIZE = 30;
         private const int DEF_THRESHHOLD = 5;
-        private const int DEF_REQUESTS_LOGGING_ACCUMULATION_TIME = 10;
+        private const int DEF_REQUESTS_LOGGING_ACCUMULATION_TIME_SECONDS = 10;
         private const string KEY_ERROR_FALLBACK = "EPfBVN404UseStdErrorHandlerAsFallback";
         private const FileNotFoundMode DEF_NOTFOUND_MODE = FileNotFoundMode.On;
         public const int CurrentVersion = 3;
@@ -48,7 +48,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         private bool? _fallbackToEPiServerError;
         private static int _loggingBufferSize = -1;
         private static int _loggingThresholdSize = -1;
-        private static int _redirectsLoggingAccumulationTime = -1;
+        private static int _redirectsLoggingAccumulationTimeSeconds = -1;
 
         /// <summary>
         ///     Tells the errorhandler to use EPiServer Exception Manager
@@ -173,27 +173,27 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         /// <summary>
         /// Redirects logging accumulation time in seconds.
         /// </summary>
-        public virtual int RedirectsLoggingAccumulationTime
+        public virtual int RedirectsLoggingAccumulationTimeSeconds
         {
             get
             {
-                if (_redirectsLoggingAccumulationTime == -1)
+                if (_redirectsLoggingAccumulationTimeSeconds == -1)
                 {
-                    var configuredString = ConfigurationManager.AppSettings["RedirectsLoggingAccumulationTime"];
+                    var configuredString = ConfigurationManager.AppSettings["RedirectsLoggingAccumulationTimeSeconds"];
                     int configuredInt;
 
                     if (!string.IsNullOrEmpty(configuredString) && int.TryParse(configuredString, out configuredInt) && configuredInt > 0)
                     {
-                        _redirectsLoggingAccumulationTime = configuredInt;
+                        _redirectsLoggingAccumulationTimeSeconds = configuredInt;
                     }
                     else
                     {
-                        _redirectsLoggingAccumulationTime = DEF_REQUESTS_LOGGING_ACCUMULATION_TIME;
+                        _redirectsLoggingAccumulationTimeSeconds = DEF_REQUESTS_LOGGING_ACCUMULATION_TIME_SECONDS;
                     }
                 }
 
 
-                return _redirectsLoggingAccumulationTime;
+                return _redirectsLoggingAccumulationTimeSeconds;
             }
         }
     }

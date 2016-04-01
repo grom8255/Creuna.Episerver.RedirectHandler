@@ -20,7 +20,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Logging
         public RequestLogger(RedirectConfiguration redirectConfiguration)
         {
             _redirectConfiguration = redirectConfiguration;
-            _logsAccumulationTimer = new Timer(_redirectConfiguration.RedirectsLoggingAccumulationTime * 1000) { AutoReset = false };
+            _logsAccumulationTimer = new Timer(_redirectConfiguration.RedirectsLoggingAccumulationTimeSeconds * 1000) { AutoReset = false };
             _logsAccumulationTimer.Elapsed += LogsAccumulationTimerOnElapsed;
             LogQueue = new List<LogEvent>();
         }
