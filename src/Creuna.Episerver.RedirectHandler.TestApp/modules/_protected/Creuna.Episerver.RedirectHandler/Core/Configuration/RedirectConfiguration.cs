@@ -1,7 +1,7 @@
+using EPiServer.ServiceLocation;
 using System;
 using System.Configuration;
 using System.Globalization;
-using EPiServer.ServiceLocation;
 
 namespace Creuna.Episerver.RedirectHandler.Core.Configuration
 {
@@ -38,6 +38,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         private const LoggerMode DEF_LOGGING = LoggerMode.On;
         private const int DEF_BUFFER_SIZE = 30;
         private const int DEF_THRESHHOLD = 5;
+        private const int DEF_REQUESTS_LOGGING_ACCUMULATION_TIME_SECONDS = 10;
         private const string KEY_ERROR_FALLBACK = "EPfBVN404UseStdErrorHandlerAsFallback";
         private const FileNotFoundMode DEF_NOTFOUND_MODE = FileNotFoundMode.On;
         public const int CurrentVersion = 3;
@@ -47,7 +48,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         private bool? _fallbackToEPiServerError;
         private static int _loggingBufferSize = -1;
         private static int _loggingThresholdSize = -1;
-
+        private static int _redirectsLoggingAccumulationTimeSeconds = -1;
 
         /// <summary>
         ///     Tells the errorhandler to use EPiServer Exception Manager
@@ -154,7 +155,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
         {
             get
             {
-               if (_loggingThresholdSize == -1)
+                if (_loggingThresholdSize == -1)
                 {
                     var configured = ConfigurationManager.AppSettings["RedirectsLoggingThresholdSize"] ??
                                      DEF_THRESHHOLD.ToString(CultureInfo.InvariantCulture);
@@ -165,7 +166,34 @@ namespace Creuna.Episerver.RedirectHandler.Core.Configuration
                         _loggingThresholdSize = DEF_THRESHHOLD;
                 }
 
-                return DEF_THRESHHOLD;
+                return _loggingThresholdSize;
+            }
+        }
+
+        /// <summary>
+        /// Redirects logging accumulation time in seconds.
+        /// </summary>
+        public virtual int RedirectsLoggingAccumulationTimeSeconds
+        {
+            get
+            {
+                if (_redirectsLoggingAccumulationTimeSeconds == -1)
+                {
+                    var configuredString = ConfigurationManager.AppSettings["RedirectsLoggingAccumulationTimeSeconds"];
+                    int configuredInt;
+
+                    if (!string.IsNullOrEmpty(configuredString) && int.TryParse(configuredString, out configuredInt) && configuredInt > 0)
+                    {
+                        _redirectsLoggingAccumulationTimeSeconds = configuredInt;
+                    }
+                    else
+                    {
+                        _redirectsLoggingAccumulationTimeSeconds = DEF_REQUESTS_LOGGING_ACCUMULATION_TIME_SECONDS;
+                    }
+                }
+
+
+                return _redirectsLoggingAccumulationTimeSeconds;
             }
         }
     }
