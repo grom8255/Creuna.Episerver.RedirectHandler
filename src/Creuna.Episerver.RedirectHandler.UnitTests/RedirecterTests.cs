@@ -222,6 +222,31 @@ namespace Creuna.Episerver.RedirectHandler
             }
         }
 
+        public class When_an_old_url_with_special_chracters_is_set_up_both_with_and_without_querystrings : RedirecterTests
+        {
+            [Test]
+            public void _then_the_most_specific_redirect_is_used()
+            {
+                _redirects.Add(new CustomRedirect("/åøæ",
+                    "/b", false, true, true));
+                _redirects.Add(new CustomRedirect("/åøæ?x=y",
+                    "/correct", false, true, true));
+                _sut.Redirect("", new Uri("http://www.incoming.com/" + "åøæ?x=y"))
+                    .NewUrl.ShouldEqual("/correct?x=y");
+            }
+
+            [Test]
+            public void _then_the_querystring_is_only_forwarded_if_specified()
+            {
+                _redirects.Add(new CustomRedirect("/åøæ",
+                    "/b", false, true, true));
+                _redirects.Add(new CustomRedirect("/åøæ?x=y",
+                    "/correct", false, true, false));
+                _sut.Redirect("", new Uri("http://www.incoming.com/" + "åøæ?x=y"))
+                    .NewUrl.ShouldEqual("/correct");
+            }
+        }
+
         public class When_the_target_url_is_absolute : RedirecterTests
         {
             [Test]
