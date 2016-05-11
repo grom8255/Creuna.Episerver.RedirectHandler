@@ -22,7 +22,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         {
             var redirect = FindRedirect(urlNotFound);
 
-            string pathAndQuery = HttpUtility.HtmlEncode(urlNotFound.PathAndQuery);
+            string pathAndQuery = Uri.UnescapeDataString(urlNotFound.PathAndQuery);
             if (redirect != null)
             {
                 if (redirect.State.Equals((int)DataStoreHandler.GetState.Saved))

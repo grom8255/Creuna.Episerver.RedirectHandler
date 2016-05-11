@@ -66,8 +66,8 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             if (!urlNotFound.IsAbsoluteUri)
                 return null;
 
-            return FindRedirect(urlNotFound, HttpUtility.HtmlEncode(urlNotFound.PathAndQuery))
-                   ?? FindRedirect(urlNotFound, HttpUtility.HtmlEncode(urlNotFound.AbsolutePath));
+            return FindRedirect(urlNotFound, Uri.UnescapeDataString(urlNotFound.PathAndQuery))
+                   ?? FindRedirect(urlNotFound, urlNotFound.AbsolutePath);
         }
 
         private CustomRedirect FindRedirect(Uri urlNotFound, string oldUri)
