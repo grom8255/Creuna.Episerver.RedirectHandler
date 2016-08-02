@@ -1,9 +1,16 @@
-# 404 Handler for EPiServer
-The popular 404 handler for EPiServer, enabling better control over your 404 page in addition to allowing redirects for old urls that no longer works.
+# Creuna Redirect Handler
+A 404 handler for EPiServer, based on the widely used BVNetworks' 404 handler.
 
-The perfect companion if you're transitioning to EPiServer from another system and cannot keep the url structure, or plan to do major re-structuring of your content.
+It has been altered slightly for more control over urls and query strings, and has tests 
+which prove its functionality.
 
 # Installation
-`Install-Package BVN.404Handler`
+`Install-Package Creuna.EPiServer.RedirectHandler`
 
 The package can be found in the [EPiServer Nuget Feed](http://nuget.episerver.com/).
+
+# Release notes
+
+## 2016-05-11
+Now handled special characters in from urls
+Proven compatibility with EPIServer 9.9.
