@@ -20,7 +20,7 @@
     </dependencies>
     <tags>EPiServer redirects</tags>
     <releaseNotes>
-      This patch should ensure that any URLs, both those not found and set up as old uri in the system, are matched regardless of whether they contain escaped characters.
+      This version makes the table name of the table containing the redirects configurable.
     </releaseNotes>
   </metadata>
   <files>
