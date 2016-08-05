@@ -3,7 +3,7 @@
   <metadata>
     <id>Creuna.EPiServer.RedirectHandler</id>
     <title>Redirect Handler for EPiServer</title>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <authors>Creuna, Joachim Løvf</authors>
     <owners>Creuna</owners>
     <iconUrl>http://www.creuna.no/favicon.ico</iconUrl>
@@ -19,6 +19,9 @@
       <dependency id="EPiServer.CMS.UI.Core" version="9.2.0" />
     </dependencies>
     <tags>EPiServer redirects</tags>
+    <releaseNotes>
+      This patch should ensure that any URLs, both those not found and set up as old uri in the system, are matched regardless of whether they contain escaped characters.
+    </releaseNotes>
   </metadata>
   <files>
     <file src="bin\$configuration$\Creuna.Episerver.RedirectHandler.dll" target="lib\net45\" />

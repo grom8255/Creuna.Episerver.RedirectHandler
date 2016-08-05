@@ -304,5 +304,38 @@ namespace Creuna.Episerver.RedirectHandler
                     .NewUrl.ShouldEqual("/de-welcome/?parameter=value");
             }
         }
+
+        public class When_the_notfound_url_contains_escaped_characters : RedirecterTests
+        {
+            [Test]
+            [TestCase("http://local.seafoodfromnorway.int/recipes/england/norwegian-skrei,-michel%E2%80%99s-way-skrei-bourguignonne")]
+            [TestCase("http://local.seafoodfromnorway.int/recipes/england/norwegian-skrei,-michel%e2%80%99s-way-skrei-bourguignonne")]
+            public void Redirect_is_done_regardless_of_encoding_casing(string notFound)
+            {
+                var expected = "result";
+                _redirects.Add(new CustomRedirect(
+                    "http://local.seafoodfromnorway.int/Recipes/England/Norwegian-Skrei,-Michel’s-Way-Skrei-Bourguignonne",
+                    expected, false, true, true));
+                _sut.Redirect(string.Empty, new Uri(notFound))
+                    .NewUrl.ShouldEqual(expected);
+            }
+        }
+
+        public class When_the_old_url_escaped_characters : RedirecterTests
+        {
+            [Test]
+            [TestCase("http://local.seafoodfromnorway.int/recipes/england/norwegian-skrei,-michel%E2%80%99s-way-skrei-bourguignonne")]
+            [TestCase("http://local.seafoodfromnorway.int/recipes/england/norwegian-skrei,-michel%e2%80%99s-way-skrei-bourguignonne")]
+            [TestCase("http://local.seafoodfromnorway.int/Recipes/England/Norwegian-Skrei,-Michel’s-Way-Skrei-Bourguignonne")]
+            public void Redirect_is_done_regardless_of_encoding_casing(string notFound)
+            {
+                var expected = "result";
+                _redirects.Add(new CustomRedirect(
+                    "http://local.seafoodfromnorway.int/Recipes/England/Norwegian-Skrei,-Michel%e2%80%99s-Way-Skrei-Bourguignonne",
+                    expected, false, true, true));
+                _sut.Redirect(string.Empty, new Uri(notFound))
+                    .NewUrl.ShouldEqual(expected);
+            }
+        }
     }
 }

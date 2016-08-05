@@ -29,10 +29,11 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         public int Add(CustomRedirect customRedirect)
         {
-            if (_quickLookupTable.ContainsKey(customRedirect.OldUrl))
+            var oldUrl = HttpUtility.UrlDecode(customRedirect.OldUrl);
+            if (_quickLookupTable.ContainsKey(oldUrl))
                 Log.WarnFormat("Two or more redirects set up for Old Url: {0}", customRedirect.OldUrl);
             else
-                _quickLookupTable.Add(customRedirect.OldUrl, customRedirect);
+                _quickLookupTable.Add(oldUrl, customRedirect);
             return List.Add(customRedirect);
         }
 
@@ -72,10 +73,11 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         private CustomRedirect FindRedirect(Uri urlNotFound, string oldUri)
         {
-            if (_quickLookupTable.ContainsKey(urlNotFound.AbsoluteUri))
-                return BuildNewUrl(_quickLookupTable[urlNotFound.AbsoluteUri], urlNotFound.AbsoluteUri, oldUri, urlNotFound.Query);
+            var absoluteUri = HttpUtility.UrlDecode(urlNotFound.AbsoluteUri);
+            if (_quickLookupTable.ContainsKey(absoluteUri))
+                return BuildNewUrl(_quickLookupTable[absoluteUri], absoluteUri, oldUri, urlNotFound.Query);
             if (_quickLookupTable.ContainsKey(oldUri))
-                return BuildNewUrl(_quickLookupTable[oldUri], urlNotFound.AbsoluteUri, oldUri, urlNotFound.Query);
+                return BuildNewUrl(_quickLookupTable[oldUri], absoluteUri, oldUri, urlNotFound.Query);
 
             // No exact match could be done, so we'll check if the 404 url
             // starts with one of the urls we're matching against. This
