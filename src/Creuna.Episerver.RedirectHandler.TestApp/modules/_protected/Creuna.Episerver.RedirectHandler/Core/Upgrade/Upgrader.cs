@@ -25,7 +25,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Upgrade
             var dba = DataAccessBaseEx.GetWorker();
 
             Log.Info("Create 404 handler redirects table START");
-            const string createTableScript = @"CREATE TABLE " + DataAccessBaseEx.RedirectsTable + " ( "
+            string createTableScript = @"CREATE TABLE " + DataAccessBaseEx.RedirectsTable + " ( "
                                              + " [ID] [int] IDENTITY(1,1) NOT NULL, "
                                              + " [OldUrl] [nvarchar](2000) NOT NULL,"
                                              + " [Requested] [datetime] NULL,       "
@@ -34,8 +34,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Upgrade
             var create = dba.ExecuteNonQuery(createTableScript);
 
             Log.Info("Create 404 handler redirects table END");
-
-
+            
             if (create)
             {
                 Log.Info("Create 404 handler version SP START");

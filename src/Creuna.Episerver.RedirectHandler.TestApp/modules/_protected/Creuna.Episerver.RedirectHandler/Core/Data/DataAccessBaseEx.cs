@@ -7,13 +7,14 @@ using EPiServer.Data;
 using EPiServer.DataAccess;
 using EPiServer.Logging;
 using EPiServer.ServiceLocation;
+using System.Configuration;
 
 namespace Creuna.Episerver.RedirectHandler.Core.Data
 {
     public class DataAccessBaseEx : DataAccessBase
     {
-        internal const string RedirectsTable = "[dbo].[BVN.NotFoundRequests]";
-        internal const string VersionStoredProc = "[dbo].[Creuna.RedirectHandler.Version]";
+        public static readonly string RedirectsTable = ConfigurationManager.AppSettings["Creuna.Redirects.TableName"] ?? "[dbo].[BVN.NotFoundRequests]";
+        public static readonly string VersionStoredProc = ConfigurationManager.AppSettings["Creuna.Redirects.VersionStoredProx"] ?? "[dbo].[Creuna.RedirectHandler.Version]";
 
         private static readonly ILogger Logger = LogManager.GetLogger();
 
@@ -127,9 +128,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
         public DataSet GetRequestReferers(string url)
         {
             string sqlCommand =
-                string.Format(
-                    "SELECT [Referer], COUNT(*) as Requests FROM {0} where [OldUrl] = @oldurl  GROUP BY [Referer] order by Requests desc",
-                    RedirectsTable);
+                    $"SELECT [Referer], COUNT(*) as Requests FROM {RedirectsTable} where [OldUrl] = @oldurl  GROUP BY [Referer] order by Requests desc";
             DbParameter oldUrlParam = CreateParameter("oldurl", DbType.String, 4000);
             oldUrlParam.Value = url;
 
@@ -140,8 +139,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
 
         public DataSet GetTotalNumberOfSuggestions()
         {
-            string sqlCommand = string.Format("SELECT COUNT(DISTINCT [OldUrl]) FROM {0}", RedirectsTable);
-            return ExecuteSql(sqlCommand, null);
+            return ExecuteSql($"SELECT COUNT(DISTINCT [OldUrl]) FROM {RedirectsTable}", null);
         }
 
 
@@ -149,17 +147,13 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
         {
             return Database.Execute(() =>
             {
-                const string sqlCommand = DataAccessBaseEx.VersionStoredProc;
                 int version = -1;
                 try
                 {
-                    //  base.Database.Connection.Open();
                     DbCommand command = CreateCommand();
-
                     command.Parameters.Add(CreateReturnParameter());
-                    command.CommandText = sqlCommand;
+                    command.CommandText = VersionStoredProc;
                     command.CommandType = CommandType.StoredProcedure;
-                    //  command.Connection = base.Database.Connection;
                     command.ExecuteNonQuery();
                     version = Convert.ToInt32(GetReturnValue(command).ToString());
                 }
@@ -172,10 +166,6 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
                 {
                     Logger.Error(string.Format("Error during NotFoundHandler version check:{0}", ex));
                 }
-                finally
-                {
-                    // base.Database.Connection.Close();
-                }
                 return version;
             });
         }
@@ -185,7 +175,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
         {
             Database.Execute(() =>
             {
-                string sqlCommand = "INSERT INTO [dbo].[BVN.NotFoundRequests] (" +
+                string sqlCommand = $"INSERT INTO {RedirectsTable} (" +
                                     "Requested, OldUrl, " +
                                     "Referer" +
                                     ") VALUES (" +
@@ -194,8 +184,6 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
                                     ")";
                 try
                 {
-                    //   base.Database.Connection.Open();
-                    // this.OpenConnection();
                     IDbCommand command = CreateCommand();
 
                     DbParameter requstedParam = CreateParameter("requested", DbType.DateTime, 0);
@@ -215,10 +203,6 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
                 catch (Exception ex)
                 {
                     Logger.Error("An error occured while logging a 404 handler error. Ex:" + ex);
-                }
-                finally
-                {
-                    //    base.Database.Connection.Close();
                 }
                 return true;
             });
