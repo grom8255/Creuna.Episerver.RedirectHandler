@@ -20,9 +20,7 @@
     </dependencies>
     <tags>EPiServer redirects</tags>
     <releaseNotes>
-      From-uris will now be matched on query strnig as well.
-      E.g a redirect set up as "http://www.site.com/old-page" to "/new-page"
-      will match both on "old-page" and "old-page?name=value".
+      Renamed menu component to avoid collisions with other projects.
     </releaseNotes>
   </metadata>
   <files>
