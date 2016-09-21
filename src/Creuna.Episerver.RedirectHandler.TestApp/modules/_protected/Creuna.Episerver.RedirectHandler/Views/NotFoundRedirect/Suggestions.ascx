@@ -28,7 +28,7 @@
     </div>
    
     <input type="hidden" name="pageSize" value='<%= Model.PageSize %>' />
-    <% Html.RenderPartial("Menu", "Suggestions"); %>
+    <% Html.RenderPartial("NotFoundRedirectMenu", "Suggestions"); %>
       
     <table class="epi-default">
         <thead>

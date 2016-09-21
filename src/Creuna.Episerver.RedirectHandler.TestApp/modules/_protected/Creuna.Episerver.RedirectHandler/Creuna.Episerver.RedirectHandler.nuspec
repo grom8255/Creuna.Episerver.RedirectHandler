@@ -3,7 +3,7 @@
   <metadata>
     <id>Creuna.EPiServer.RedirectHandler</id>
     <title>Redirect Handler for EPiServer</title>
-    <version>1.2.0</version>
+    <version>1.3.1</version>
     <authors>Creuna, Joachim Løvf</authors>
     <owners>Creuna</owners>
     <iconUrl>http://www.creuna.no/favicon.ico</iconUrl>
@@ -20,7 +20,9 @@
     </dependencies>
     <tags>EPiServer redirects</tags>
     <releaseNotes>
-      This version makes the table name of the table containing the redirects configurable.
+      From-uris will now be matched on query strnig as well.
+      E.g a redirect set up as "http://www.site.com/old-page" to "/new-page"
+      will match both on "old-page" and "old-page?name=value".
     </releaseNotes>
   </metadata>
   <files>

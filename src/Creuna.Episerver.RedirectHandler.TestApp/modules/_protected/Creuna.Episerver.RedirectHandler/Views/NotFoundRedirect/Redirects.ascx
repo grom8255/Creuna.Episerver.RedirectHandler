@@ -4,7 +4,6 @@
 <%@ Import Namespace="EPiServer.Core" %>
 <%@ Import Namespace="EPiServer.Framework.Localization" %>
 
-
 <!-- <div class="notfound about"> 
      </div>
     -->
@@ -24,7 +23,7 @@
     <% Html.EndForm(); %>
 
     <input type="hidden" name="pageSize" value='<%= Model.PageSize %>' />
-    <% Html.RenderPartial("Menu", "Index"); %>
+    <% Html.RenderPartial("NotFoundRedirectMenu", "Index"); %>
     <% Html.BeginGadgetForm("Save"); %>
     <table class="epi-default">
         <thead>

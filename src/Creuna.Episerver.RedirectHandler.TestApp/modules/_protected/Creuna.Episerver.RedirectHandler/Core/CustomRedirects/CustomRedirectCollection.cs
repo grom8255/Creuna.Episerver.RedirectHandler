@@ -66,18 +66,31 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         {
             if (!urlNotFound.IsAbsoluteUri)
                 return null;
+            return FindFromAbsoluteUrl(urlNotFound)
+                ?? FindFromAbsoluteUrl(RemoveQuerystringFrom(urlNotFound));
+        }
 
+        private Uri RemoveQuerystringFrom(Uri urlNotFound)
+        {
+            return new Uri(urlNotFound.GetLeftPart(UriPartial.Path));
+        }
+
+        private CustomRedirect FindFromAbsoluteUrl(Uri urlNotFound)
+        {
             return FindRedirect(urlNotFound, Uri.UnescapeDataString(urlNotFound.PathAndQuery))
                    ?? FindRedirect(urlNotFound, urlNotFound.AbsolutePath);
         }
 
         private CustomRedirect FindRedirect(Uri urlNotFound, string oldUri)
         {
+            CustomRedirect redirect = null;
             var absoluteUri = HttpUtility.UrlDecode(urlNotFound.AbsoluteUri);
             if (_quickLookupTable.ContainsKey(absoluteUri))
-                return BuildNewUrl(_quickLookupTable[absoluteUri], absoluteUri, oldUri, urlNotFound.Query);
+                redirect = BuildNewUrl(_quickLookupTable[absoluteUri], absoluteUri, oldUri, urlNotFound.Query);
             if (_quickLookupTable.ContainsKey(oldUri))
-                return BuildNewUrl(_quickLookupTable[oldUri], absoluteUri, oldUri, urlNotFound.Query);
+                redirect = BuildNewUrl(_quickLookupTable[oldUri], absoluteUri, oldUri, urlNotFound.Query);
+            if (redirect != null)
+                return redirect;
 
             // No exact match could be done, so we'll check if the 404 url
             // starts with one of the urls we're matching against. This

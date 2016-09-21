@@ -10,7 +10,7 @@
         </fieldset>
     </div>
 
-    <% Html.RenderPartial("Menu", "Ignored"); %>
+    <% Html.RenderPartial("NotFoundRedirectMenu", "Ignored"); %>
     <table class="epi-default">
         <thead>
             <tr>

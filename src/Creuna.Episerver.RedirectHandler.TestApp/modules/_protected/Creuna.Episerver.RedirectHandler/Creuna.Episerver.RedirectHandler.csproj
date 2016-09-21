@@ -134,7 +134,9 @@
     <None Include="Views\NotFoundRedirect\Index.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </None>
-    <None Include="Views\NotFoundRedirect\Menu.ascx" />
+    <None Include="Views\NotFoundRedirect\NotFoundRedirectMenu.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </None>
     <None Include="Views\NotFoundRedirect\NotFoundPager.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </None>
