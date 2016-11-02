@@ -19,9 +19,10 @@ namespace Creuna.Episerver.RedirectHandler.Core
         private const string NotFoundParam = "notfound";
         private readonly RedirectConfiguration _redirectConfiguration = new RedirectConfiguration();
 
-        public Custom404Handler(CustomRedirectHandler customRedirectHandler)
+        public Custom404Handler(CustomRedirectHandler customRedirectHandler, IEnumerable<IRedirectLogger> redirectLoggers)
         {
             _customRedirectHandler = customRedirectHandler;
+            _loggers = redirectLoggers;
         }
 
         private static readonly List<string> IgnoredResourceExtensions = new List<string>
@@ -37,6 +38,7 @@ namespace Creuna.Episerver.RedirectHandler.Core
 
 
         private static readonly ILogger Logger = LogManager.GetLogger();
+        private readonly IEnumerable<IRedirectLogger> _loggers;
 
         public virtual RedirectAttempt HandleRequest(string referer, Uri urlNotFound)
         {
@@ -89,32 +91,43 @@ namespace Creuna.Episerver.RedirectHandler.Core
             if (IsInfiniteLoop(context))
                 return;
 
-            var redirect = HandleRequest(GetReferer(context.Request.UrlReferrer), notFoundUri);
+            var referrer = GetReferer(context.Request.UrlReferrer);
+            var redirect = HandleRequest(referrer, notFoundUri);
             if (redirect.Redirected)
-                context.Response.RedirectPermanent(redirect.NewUrl);
+                HandleRedirect(context, referrer, notFoundUri, redirect);
+            else
+                HandlePageNotFound(context);
+        }
+
+        private void HandlePageNotFound(HttpContext context)
+        {
+            string url = Get404Url();
+
+            context.Response.Clear();
+            context.Response.TrySkipIisCustomErrors = true;
+            context.Server.ClearError();
+
+            // do the redirect to the 404 page here
+            if (HttpRuntime.UsingIntegratedPipeline)
+            {
+                context.Server.TransferRequest(url, true);
+            }
             else
             {
-                string url = Get404Url();
-
-                context.Response.Clear();
-                context.Response.TrySkipIisCustomErrors = true;
-                context.Server.ClearError();
-
-                // do the redirect to the 404 page here
-                if (HttpRuntime.UsingIntegratedPipeline)
-                {
-                    context.Server.TransferRequest(url, true);
-                }
-                else
-                {
-                    context.RewritePath(url, false);
-                    IHttpHandler httpHandler = new MvcHttpHandler();
-                    httpHandler.ProcessRequest(context);
-                }
-                // return the original status code to the client
-                // (this won't work in integrated pipleline mode)
-                context.Response.StatusCode = 404;
+                context.RewritePath(url, false);
+                IHttpHandler httpHandler = new MvcHttpHandler();
+                httpHandler.ProcessRequest(context);
             }
+            // return the original status code to the client
+            // (this won't work in integrated pipleline mode)
+            context.Response.StatusCode = 404;
+        }
+
+        private void HandleRedirect(HttpContext context, string referrer, Uri notFoundUri, RedirectAttempt redirect)
+        {
+            foreach (var logger in _loggers)
+                logger.LogRedirect(referrer, notFoundUri.ToString(), redirect.NewUrl);
+            context.Response.RedirectPermanent(redirect.NewUrl);
         }
 
         /// <summary>

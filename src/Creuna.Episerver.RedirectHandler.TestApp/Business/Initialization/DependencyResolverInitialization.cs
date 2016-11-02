@@ -7,6 +7,7 @@ using Creuna.Episerver.RedirectHandler.TestApp.Helpers;
 using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
 using StructureMap;
+using Creuna.Episerver.RedirectHandler.Core;
 
 namespace Creuna.Episerver.RedirectHandler.TestApp.Business.Initialization
 {
@@ -28,6 +29,7 @@ namespace Creuna.Episerver.RedirectHandler.TestApp.Business.Initialization
             container.For<ContentAreaRenderer>().Use<AlloyContentAreaRenderer>();
 
             //Implementations for custom interfaces can be registered here.
+            container.For<IRedirectLogger>().Use<Logging.SerilogRedirectLogger>();
         }
 
         public void Initialize(InitializationEngine context)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Web.Mvc;
 
 namespace Creuna.Episerver.RedirectHandler.TestApp
@@ -10,6 +11,7 @@ namespace Creuna.Episerver.RedirectHandler.TestApp
             AreaRegistration.RegisterAllAreas();
 
             //Tip: Want to call the EPiServer API on startup? Add an initialization module instead (Add -> New Item.. -> EPiServer -> Initialization Module)
+            
         }
     }
 }
