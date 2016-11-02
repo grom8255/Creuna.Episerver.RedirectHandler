@@ -1,12 +1,12 @@
 using System.Web;
 using Creuna.Episerver.RedirectHandler.Core.Configuration;
-using Creuna.Episerver.RedirectHandler.Core.CustomRedirects;
 using Creuna.Episerver.RedirectHandler.Core.Data;
 using Creuna.Episerver.RedirectHandler.Core.Upgrade;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.Logging.Compatibility;
 using EPiServer.ServiceLocation;
+using Creuna.Episerver.RedirectHandler.Core.Logging;
 
 namespace Creuna.Episerver.RedirectHandler.Core.Initialization
 {
@@ -15,7 +15,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Initialization
     /// </summary>
     [InitializableModule]
     [ModuleDependency(typeof(ServiceContainerInitialization))]
-    public class Custom404HandlerInitialization : IInitializableHttpModule
+    public class Custom404HandlerInitialization : IInitializableHttpModule, IConfigurableModule
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Custom404HandlerInitialization));
         public Injected<Custom404Handler> RedirectHandler { get; set; }
@@ -48,6 +48,13 @@ namespace Creuna.Episerver.RedirectHandler.Core.Initialization
 
         public void Preload(string[] parameters)
         {
+        }
+
+        public void ConfigureContainer(ServiceConfigurationContext context)
+        {
+            var container = context.Container;
+            if (!container.Model.HasImplementationsFor<IRedirectLogger>())
+                container.Configure(x => x.For<IRedirectLogger>().Use<Log4NetLogger>());
         }
     }
 }
