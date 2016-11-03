@@ -17,6 +17,7 @@
       <dependency id="EPiServer.Framework" version="9.1.0" />
       <dependency id="EPiServer.CMS.Core" version="9.1.0" />
       <dependency id="EPiServer.CMS.UI.Core" version="9.2.0" />
+      <dependency id="Microsoft.AspNet.Mvc" version="5.0.0" />
     </dependencies>
     <tags>EPiServer redirects</tags>
     <releaseNotes>
