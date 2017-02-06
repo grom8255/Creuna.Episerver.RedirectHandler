@@ -3,7 +3,7 @@
   <metadata>
     <id>Creuna.EPiServer.RedirectHandler</id>
     <title>Redirect Handler for EPiServer</title>
-    <version>2.1.0.0</version>
+    <version>2.1.0.1</version>
     <authors>Creuna, Joachim Løvf</authors>
     <owners>Creuna</owners>
     <iconUrl>http://www.creuna.no/favicon.ico</iconUrl>
@@ -21,7 +21,7 @@
     </dependencies>
     <tags>EPiServer redirects</tags>
     <releaseNotes>
-      Added pluggable logging interface.
+      Fixed db issue, updated for EPiServer 10.
     </releaseNotes>
   </metadata>
   <files>
