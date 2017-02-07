@@ -5,7 +5,7 @@
 <div class="notfound">
     <div class="epi-formArea">
         <fieldset>
-            <%= string.Format(LanguageManager.Instance.Translate("/gadget/redirects/ignoredsuggestions"), Model.Count) %>
+            <%= string.Format(Html.Translate("/gadget/redirects/ignoredsuggestions"), Model.Count) %>
          
         </fieldset>
     </div>
@@ -16,10 +16,10 @@
             <tr>
                 <th>
                     <label>
-                        <%= LanguageManager.Instance.Translate("/gadget/redirects/url") %></label>
+                        <%= Html.Translate("/gadget/redirects/url") %></label>
                 </th>
                 <th>
-                    <%= LanguageManager.Instance.Translate("/gadget/redirects/unignore") %>
+                    <%= Html.Translate("/gadget/redirects/unignore") %>
                 </th>
             </tr>
         </thead>
