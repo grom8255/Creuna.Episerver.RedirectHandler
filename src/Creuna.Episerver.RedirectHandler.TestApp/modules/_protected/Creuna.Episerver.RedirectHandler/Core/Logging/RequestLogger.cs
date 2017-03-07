@@ -98,7 +98,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Logging
 
             if (requestsPerSecond <= threshold)
             {
-                DataAccessBaseEx dba = DataAccessBaseEx.GetWorker();
+                DataAccessBaseEx dba = new DataAccessBaseEx();
                 foreach (LogEvent logEvent in logEvents)
                 {
                     dba.LogRequestToDb(logEvent.OldUrl, logEvent.Referer, logEvent.Requested);

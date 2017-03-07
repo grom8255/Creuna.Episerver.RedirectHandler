@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<Creuna.Episerver.RedirectHandler.Models.RedirectIndexViewData>" %>
+﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<Creuna.Episerver.RedirectHandler.Models.RedirectIndexViewData>" %> 
 <%@ Import Namespace="Creuna.Episerver.RedirectHandler.Core.CustomRedirects" %>
 <%@ Import Namespace="Creuna.Episerver.RedirectHandler.Core.Data" %>
 <%@ Import Namespace="EPiServer.Core" %>
@@ -83,7 +83,7 @@
                 <%= Html.Encode(m.OldUrl) %>
             </td>
             <td class="longer">
-                <% if (m.State.Equals((int)DataStoreHandler.GetState.Ignored))
+                <% if (m.State == GetState.Ignored)
                    { %>
                 <i>[<%= LocalizationService.Current.GetString("/gadget/redirects/ignored") %>]</i>
                 <% }

@@ -1,7 +1,4 @@
 using System.Web;
-using Creuna.Episerver.RedirectHandler.Core.Configuration;
-using Creuna.Episerver.RedirectHandler.Core.Data;
-using Creuna.Episerver.RedirectHandler.Core.Upgrade;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.Logging.Compatibility;
@@ -22,23 +19,12 @@ namespace Creuna.Episerver.RedirectHandler.Core.Initialization
 
         public void Initialize(InitializationEngine context)
         {
-            Log.Debug("Initializing 404 handler version check");
-            var dba = DataAccessBaseEx.GetWorker();
-            var version = dba.CheckModuleVersion();
-            if (version != RedirectConfiguration.CurrentVersion)
-                StartUpgrade(version);
-            else
-                Upgrader.Valid = true;
-        }
-
-        private static void StartUpgrade(int version)
-        {
-            Log.Debug("Older version found. Version nr. :" + version);
-            Upgrader.Start(version);
+            Log.Debug("404 handler initialized.");
         }
 
         public void Uninitialize(InitializationEngine context)
         {
+            // Method intentionally left empty.
         }
 
         public void InitializeHttpEvents(HttpApplication application)
@@ -48,6 +34,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Initialization
 
         public void Preload(string[] parameters)
         {
+            // Method intentionally left empty.
         }
 
         public void ConfigureContainer(ServiceConfigurationContext context)

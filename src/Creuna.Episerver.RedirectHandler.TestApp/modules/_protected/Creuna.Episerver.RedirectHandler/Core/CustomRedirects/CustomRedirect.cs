@@ -1,30 +1,29 @@
 using System;
 using Creuna.Episerver.RedirectHandler.Core.Data;
 using EPiServer.Data;
-using EPiServer.Data.Dynamic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 {
-    [EPiServerDataStore(AutomaticallyRemapStore = true, StoreName = "Creuna.Episerver.RedirectHandler.CustomRedirect")]
-    public class CustomRedirect : IDynamicData
+    public class CustomRedirect
     {
         public CustomRedirect()
         {
 
         }
-
         public CustomRedirect(string oldUrl, string newUrl, bool appendMatchToNewUrl, bool exactMatch, bool includeQueryString)
-            : this(oldUrl, newUrl, appendMatchToNewUrl, exactMatch, includeQueryString, 0)
+         : this(oldUrl, newUrl, appendMatchToNewUrl, exactMatch, includeQueryString, 0)
         { }
 
         public CustomRedirect(string oldUrl, string newUrl, bool appendMatchToNewUrl, bool exactMatch,
-            bool includeQueryString, int state)
+            bool includeQueryString, GetState state)
             : this(oldUrl, newUrl, appendMatchToNewUrl, exactMatch, includeQueryString, state, 0)
         {
 
         }
 
-        public CustomRedirect(string oldUrl, string newUrl, bool appendMatchToNewUrl, bool exactMatch, bool includeQueryString, int state, int notFoundErrorCount)
+        public CustomRedirect(string oldUrl, string newUrl, bool appendMatchToNewUrl, bool exactMatch, bool includeQueryString, GetState state, int notFoundErrorCount)
         {
             OldUrl = (oldUrl ?? "").ToLower().Trim();
             NewUrl = (newUrl ?? "").ToLower().Trim();
@@ -35,21 +34,30 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             NotfoundErrorCount = notFoundErrorCount;
         }
 
-        public CustomRedirect(CustomRedirect redirect)
+        public static CustomRedirect Copy(CustomRedirect redirect)
         {
-            OldUrl = redirect.OldUrl;
-            NewUrl = redirect.NewUrl;
-            AppendMatchToNewUrl = redirect.AppendMatchToNewUrl;
-            ExactMatch = redirect.ExactMatch;
-            IncludeQueryString = redirect.IncludeQueryString;
+            return new CustomRedirect
+            {
+                OldUrl = redirect.OldUrl,
+                NewUrl = redirect.NewUrl,
+                AppendMatchToNewUrl = redirect.AppendMatchToNewUrl,
+                ExactMatch = redirect.ExactMatch,
+                IncludeQueryString = redirect.IncludeQueryString
+            };
         }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
+        public Guid Id { get; set; }
+
         public string NewUrl { get; set; }
+
+        [Required(AllowEmptyStrings = false)]
         public string OldUrl { get; set; }
         public bool AppendMatchToNewUrl { get; set; }
         public bool ExactMatch { get; set; }
         public bool IncludeQueryString { get; set; }
-        public int State { get; set; }
+        public GetState State { get; set; }
         public int NotfoundErrorCount { get; set; }
 
         /// <summary>
@@ -64,8 +72,6 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
                 return NewUrl.StartsWith("/");
             }
         }
-
-        public Identity Id { get; set; }
 
         /// <summary>
         ///     The hash code for the CustomRedirect class is the
@@ -90,7 +96,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         public static CustomRedirect CreateIgnored(string oldUrl)
         {
-            return new CustomRedirect(oldUrl, string.Empty, false, true, true, Convert.ToInt32(DataStoreHandler.GetState.Ignored));
+            return new CustomRedirect(oldUrl, string.Empty, false, true, true, GetState.Ignored);
         }
 
         public CustomRedirect WithNewUrl(string newUrl)

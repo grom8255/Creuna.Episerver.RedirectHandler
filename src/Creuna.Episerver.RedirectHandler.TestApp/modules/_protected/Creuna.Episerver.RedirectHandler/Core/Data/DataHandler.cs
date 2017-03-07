@@ -12,7 +12,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
         {
             var keyCounts = new Dictionary<string, int>();
             var keyList = new List<string>();
-            DataAccessBaseEx dabe = DataAccessBaseEx.GetWorker();
+            DataAccessBaseEx dabe = new DataAccessBaseEx();
             DataSet allkeys = dabe.GetAllClientRequestCount();
 
             string oldUrl;
@@ -32,7 +32,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
 
         public static Dictionary<string, int> GetReferers(string url)
         {
-            DataAccessBaseEx dataAccess = DataAccessBaseEx.GetWorker();
+            DataAccessBaseEx dataAccess = new DataAccessBaseEx();
             DataSet referersDs = dataAccess.GetRequestReferers(url);
 
             var referers = new Dictionary<string, int>();
@@ -60,7 +60,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Data
 
         public static int GetTotalSuggestionCount()
         {
-            DataAccessBaseEx dataAccess = DataAccessBaseEx.GetWorker();
+            DataAccessBaseEx dataAccess = new DataAccessBaseEx();
             DataSet totalSuggestionCountDs = dataAccess.GetTotalNumberOfSuggestions();
             if (totalSuggestionCountDs != null && totalSuggestionCountDs.Tables != null &&
                 totalSuggestionCountDs.Tables.Count > 0)

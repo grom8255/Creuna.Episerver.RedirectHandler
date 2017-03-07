@@ -99,8 +99,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
             SaveRedirect(oldUrl, newUrl, skipWildCardAppend, exactMatch, includeQuerystring);
 
             // delete rows from DB
-            DataAccessBaseEx dbAccess = DataAccessBaseEx.GetWorker();
-            dbAccess.DeleteRowsForRequest(oldUrl);
+            new DataAccessBaseEx().DeleteRowsForRequest(oldUrl);
 
             //
             List<CustomRedirect> customRedirectList = GetSuggestions().ToList();
@@ -109,8 +108,8 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
             DataStoreEventHandlerHook.DataStoreUpdated();
             RedirectIndexViewData viewData = GetRedirectIndexViewData(pageNumber, customRedirectList, actionInfo, null,
                 pageSize, true);
-            viewData.HighestSuggestionValue = customRedirectList.First().NotfoundErrorCount;
-            viewData.LowestSuggestionValue = customRedirectList.Last().NotfoundErrorCount;
+            viewData.HighestSuggestionValue = customRedirectList.FirstOrDefault()?.NotfoundErrorCount ?? 0;
+            viewData.LowestSuggestionValue = customRedirectList.Last()?.NotfoundErrorCount ?? 0;
             return View("Index", viewData);
         }
 
@@ -155,7 +154,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
         {
             CheckAccess();
             // delete rows from DB
-            DataAccessBaseEx dbAccess = DataAccessBaseEx.GetWorker();
+            DataAccessBaseEx dbAccess = new DataAccessBaseEx();
             dbAccess.DeleteRowsForRequest(oldUrl);
 
             // add redirect to dds with state "ignored"
@@ -252,7 +251,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
         public ActionResult DeleteAllSuggestions()
         {
             CheckAccess();
-            DataAccessBaseEx.GetWorker().DeleteAllSuggestions();
+            new DataAccessBaseEx().DeleteAllSuggestions();
             ViewData["information"] = LocalizationService.Current.GetString("/gadget/redirects/suggestionsdeleted");
             return View("Administer");
         }
@@ -283,7 +282,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
         public ActionResult DeleteSuggestions(int maxErrors, int minimumDays)
         {
             CheckAccess();
-            DataAccessBaseEx.GetWorker().DeleteSuggestions(maxErrors, minimumDays);
+            new DataAccessBaseEx().DeleteSuggestions(maxErrors, minimumDays);
             ViewData["information"] = LocalizationService.Current.GetString("/gadget/redirects/suggestionsdeleted");
             return View("Administer");
         }
@@ -339,7 +338,7 @@ namespace Creuna.Episerver.RedirectHandler.Controllers
                     false,
                     true,
                     true,
-                    Convert.ToInt32(DataStoreHandler.GetState.Suggestion))
+                    GetState.Suggestion)
                     .WithNotFoundErrorCount(redirect.Value)).ToList();
         }
     }

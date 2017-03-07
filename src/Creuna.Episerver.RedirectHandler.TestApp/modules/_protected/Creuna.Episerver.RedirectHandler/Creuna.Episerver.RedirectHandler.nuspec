@@ -3,7 +3,7 @@
   <metadata>
     <id>Creuna.EPiServer.RedirectHandler</id>
     <title>Redirect Handler for EPiServer</title>
-    <version>2.1.0.1</version>
+    <version>3.0.1.0</version>
     <authors>Creuna, Joachim Løvf</authors>
     <owners>Creuna</owners>
     <iconUrl>http://www.creuna.no/favicon.ico</iconUrl>
@@ -21,7 +21,7 @@
     </dependencies>
     <tags>EPiServer redirects</tags>
     <releaseNotes>
-      Fixed db issue, updated for EPiServer 10.
+      Moved to entity framework, with better support for EPI10. NO UPGRADE PATH FROM v2 yet!
     </releaseNotes>
   </metadata>
   <files>

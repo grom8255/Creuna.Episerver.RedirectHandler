@@ -25,7 +25,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             string pathAndQuery = Uri.UnescapeDataString(urlNotFound.PathAndQuery);
             if (redirect != null)
             {
-                if (redirect.State.Equals((int)DataStoreHandler.GetState.Saved))
+                if (redirect.State.Equals(GetState.Saved))
                 {
                     // Found it, however, we need to make sure we're not running in an
                     // infinite loop. The new url must not be the referrer to this page
