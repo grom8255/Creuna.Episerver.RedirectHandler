@@ -42,6 +42,7 @@ namespace Creuna.Episerver.RedirectHandler.Core
 
         public virtual RedirectAttempt HandleRequest(string referer, Uri urlNotFound)
         {
+            Logger.Debug("Handling urlNotFound=" + urlNotFound?.PathAndQuery);
             return _customRedirectHandler.HandleRequest(referer, urlNotFound);
         }
 
@@ -50,8 +51,6 @@ namespace Creuna.Episerver.RedirectHandler.Core
             // Check if this should be enabled
             if (_redirectConfiguration.FileNotFoundHandlerMode == FileNotFoundMode.Off)
                 return;
-
-            Logger.Debug("FileNotFoundHandler called");
 
             HttpContext context = HttpContext.Current;
             if (context == null)
@@ -62,6 +61,9 @@ namespace Creuna.Episerver.RedirectHandler.Core
 
             if (context.Response.StatusCode != 404)
                 return;
+
+            Logger.Debug("404 response detected for " + HttpContext.Current?.Request?.Url);
+
             var query = context.Request.ServerVariables["QUERY_STRING"];
             if ((query != null) && query.StartsWith("404;"))
             {
@@ -97,6 +99,11 @@ namespace Creuna.Episerver.RedirectHandler.Core
                 HandleRedirect(context, referrer, notFoundUri, redirect);
             else
                 HandlePageNotFound(context);
+        }
+
+        private string GetPath()
+        {
+            throw new NotImplementedException();
         }
 
         private void HandlePageNotFound(HttpContext context)
@@ -169,7 +176,7 @@ namespace Creuna.Episerver.RedirectHandler.Core
 
             if (string.Compare(requestUrl, fnfPageUrl, StringComparison.InvariantCultureIgnoreCase) == 0)
             {
-                Logger.Information("404 Handler detected an infinite loop to 404 page. Exiting");
+                Logger.Information("404 Handler detected an infinite loop to 404 page for requestUrl=" + requestUrl + ". Exiting");
                 return true;
             }
             return false;
