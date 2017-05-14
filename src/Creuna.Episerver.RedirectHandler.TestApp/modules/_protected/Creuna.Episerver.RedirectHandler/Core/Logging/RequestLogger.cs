@@ -70,7 +70,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Logging
             {
                 try
                 {
-                    LogRequests(LogQueue);
+                    LogRequests(new List<LogEvent>(LogQueue));
                 }
                 catch (Exception ex)
                 {

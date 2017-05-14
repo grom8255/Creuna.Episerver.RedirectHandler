@@ -50,7 +50,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             while (redirect != null)
             {
                 if (touchedRedirects.ContainsKey(redirect) && touchedRedirects[redirect].Contains(redirect.NewUrl))
-                    throw new RedirectLoopException();
+                    throw new RedirectLoopException(urlNotFound.ToString());
                 AddUrlToTouchedRedirects(touchedRedirects, redirect);
                 previousRedirect = redirect;
                 var urlToRedirect = urlNotFound.GetLeftPart(UriPartial.Authority);
