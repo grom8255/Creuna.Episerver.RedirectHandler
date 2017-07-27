@@ -27,7 +27,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         private IRedirecter CreateRedirecter()
         {
-            var result = RedirecterFactory.Current.CreateRedirecter(() => LoadCustomRedirects(), _redirectConfiguration);
+            var result = RedirecterFactory.Current.CreateRedirecter(LoadCustomRedirects(), _redirectConfiguration);
             return result;
         }
 
