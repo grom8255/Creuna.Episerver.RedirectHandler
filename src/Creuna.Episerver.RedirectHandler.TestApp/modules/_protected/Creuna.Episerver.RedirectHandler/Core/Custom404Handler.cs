@@ -242,7 +242,9 @@ namespace Creuna.Episerver.RedirectHandler.Core
         {
             string baseUrl = _redirectConfiguration.FileNotFoundHandlerPage;
             string currentUrl = HttpContext.Current.Request.Url.PathAndQuery;
-            return String.Format("{0}?{1}={2}", baseUrl, NotFoundParam, HttpContext.Current.Server.UrlEncode(currentUrl));
+            return string.Concat(baseUrl, NotFoundParam, GetSeparator(baseUrl), "=", HttpContext.Current.Server.UrlEncode(currentUrl));
         }
+
+        private string GetSeparator(string baseUrl) => baseUrl.Contains("?") ? "&" : "?";
     }
 }
