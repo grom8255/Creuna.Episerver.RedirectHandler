@@ -24,10 +24,10 @@ using NSpec.Domain.Formatters;
 //[TestFixture]
 public class DebuggerShim
 {
-    //[Test]
+    [NUnit.Framework.Test]
     public void debug()
     {
-        var tagOrClassName = "class_or_tag_you_want_to_debug";
+        var tagOrClassName = "CustomRedirects";
 
         var types = GetType().GetTypeInfo().Assembly.GetTypes();
         // OR
