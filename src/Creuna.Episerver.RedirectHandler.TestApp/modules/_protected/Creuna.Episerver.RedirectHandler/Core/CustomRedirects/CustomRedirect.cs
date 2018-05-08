@@ -8,10 +8,20 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 {
     public class CustomRedirect
     {
+        private string _oldUrl;
+
         public CustomRedirect()
         {
 
         }
+
+        public CustomRedirect(CustomRedirect redirect)
+        {
+            OldUrl = redirect._oldUrl;
+            NewUrl = redirect.NewUrl;
+            AppendMatchToNewUrl = redirect.AppendMatchToNewUrl;
+        }
+
         public CustomRedirect(string oldUrl, string newUrl, bool appendMatchToNewUrl, bool exactMatch, bool includeQueryString)
          : this(oldUrl, newUrl, appendMatchToNewUrl, exactMatch, includeQueryString, 0)
         { }
@@ -53,7 +63,11 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         public string NewUrl { get; set; }
 
         [Required(AllowEmptyStrings = false)]
-        public string OldUrl { get; set; }
+        public string OldUrl
+        {
+            get => UrlStandardizer.Standardize(_oldUrl);
+            set => _oldUrl = UrlStandardizer.Standardize(value);
+        }
         public bool AppendMatchToNewUrl { get; set; }
         public bool ExactMatch { get; set; }
         public bool IncludeQueryString { get; set; }
