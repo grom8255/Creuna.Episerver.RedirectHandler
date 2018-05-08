@@ -104,6 +104,7 @@
     <Compile Include="Core\Logging\LogEvent.cs" />
     <Compile Include="Core\ColorHelper.cs" />
     <Compile Include="Controllers\NotFoundRedirectController.cs" />
+    <Compile Include="Core\UrlStandardizer.cs" />
     <Compile Include="Migrations\201703072211595_Initial.cs" />
     <Compile Include="Migrations\201703072211595_Initial.Designer.cs">
       <DependentUpon>201703072211595_Initial.cs</DependentUpon>
