@@ -155,6 +155,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\RedirectAttemptTests.cs" />
+    <Compile Include="CustomRedirectCollection_spec.cs" />
+    <Compile Include="CustomRedirect_spec.cs" />
     <Compile Include="DebuggerShim.cs" />
     <Compile Include="DictionaryCachedRedirecterTests.cs" />
     <Compile Include="RedirecterTests.cs" />

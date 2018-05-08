@@ -7,13 +7,16 @@ using NSpec;
 namespace Creuna.Episerver.RedirectHandler
 {
     [Tag("CustomRedirects")]
-        public class CustomRedirect_spec : nspec
+    public class CustomRedirect_spec : nspec
+    {
+        protected CustomRedirectCollection redirects;
+
+        protected void before_all()
         {
-            protected CustomRedirectCollection redirects;
-            protected void before_all()
-            {
-                UrlStandardizer.Accessor = () => new DefaultUrlStandardizer();
-            }
+            // TODO: Uncomment this when Vladimir's changes are applied
+            //UrlStandardizer.Accessor = () => new DefaultUrlStandardizer();
+        }
+
         protected RedirectsClause WhenUrlIs(string oldUrl)
         {
             return new RedirectsClause(this, oldUrl);
@@ -51,8 +54,8 @@ namespace Creuna.Episerver.RedirectHandler
             it[$"when url is '{oldUrl}' then it's redirected to '{newUrl}'"] = () =>
             {
                 var customRedirect = FindRedirect(oldUrl);
-
-                (customRedirect?.NewUrl ?? "<no redirect>").Should().Be(newUrl);
+                var actuallyRedirectedTo = customRedirect?.NewUrl ?? "<no redirect>";
+                actuallyRedirectedTo.Should().Be(newUrl);
             };
         }
 

@@ -65,9 +65,19 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         public CustomRedirect Find(Uri urlNotFound)
         {
             if (!urlNotFound.IsAbsoluteUri)
+            {
                 return null;
-            return FindFromAbsoluteUrl(urlNotFound)
-                ?? FindFromAbsoluteUrl(RemoveQuerystringFrom(urlNotFound));
+            }
+
+            var result = FindFromAbsoluteUrl(urlNotFound);
+
+            if (result == null)
+            {
+                var urlNotFoundWithoutQuery = RemoveQuerystringFrom(urlNotFound);
+                result = FindFromAbsoluteUrl(urlNotFoundWithoutQuery, urlNotFound.Query);
+            }
+
+            return result;
         }
 
         private Uri RemoveQuerystringFrom(Uri urlNotFound)
@@ -75,20 +85,25 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             return new Uri(urlNotFound.GetLeftPart(UriPartial.Path));
         }
 
-        private CustomRedirect FindFromAbsoluteUrl(Uri urlNotFound)
+        private CustomRedirect FindFromAbsoluteUrl(Uri urlNotFound, string queryString = null)
         {
-            return FindRedirect(urlNotFound, Uri.UnescapeDataString(urlNotFound.PathAndQuery))
-                   ?? FindRedirect(urlNotFound, urlNotFound.AbsolutePath);
+            return FindRedirect(urlNotFound, Uri.UnescapeDataString(urlNotFound.PathAndQuery), queryString)
+                   ?? FindRedirect(urlNotFound, urlNotFound.AbsolutePath, queryString);
         }
 
-        private CustomRedirect FindRedirect(Uri urlNotFound, string oldUri)
+        private CustomRedirect FindRedirect(Uri urlNotFound, string oldUri, string queryString = null)
         {
+            if (queryString == null)
+            {
+                queryString = urlNotFound.Query;
+            }
+
             CustomRedirect redirect = null;
             var absoluteUri = HttpUtility.UrlDecode(urlNotFound.AbsoluteUri);
             if (_quickLookupTable.ContainsKey(absoluteUri))
-                redirect = BuildNewUrl(_quickLookupTable[absoluteUri], absoluteUri, oldUri, urlNotFound.Query);
+                redirect = BuildNewUrl(_quickLookupTable[absoluteUri], absoluteUri, oldUri, queryString);
             if (_quickLookupTable.ContainsKey(oldUri))
-                redirect = BuildNewUrl(_quickLookupTable[oldUri], absoluteUri, oldUri, urlNotFound.Query);
+                redirect = BuildNewUrl(_quickLookupTable[oldUri], absoluteUri, oldUri, queryString);
             if (redirect != null)
                 return redirect;
 
@@ -130,7 +145,22 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         {
             var newUrl = new Uri(customRedirect.NewUrl, UriKind.RelativeOrAbsolute);
             var oldUri = new Uri(absolutePath, UriKind.RelativeOrAbsolute);
-            var uriToAppend = GetPathFromLocalUri(oldUri).Substring(customRedirect.OldUrl.Length);
+            
+            var path = GetPathFromLocalUri(oldUri);
+
+            var oldUrlLength = customRedirect.OldUrl.Length;
+
+            string uriToAppend;
+
+            if (path.Length < oldUrlLength)
+            {
+                uriToAppend = path;
+            }
+            else
+            {
+                uriToAppend = path.Substring(oldUrlLength);
+            }
+
             var querystring = GetQueryFrom(newUrl);
             return CombineUri(newUrl, uriToAppend) + (string.IsNullOrWhiteSpace(querystring) ? string.Empty : string.Concat("?", querystring));
         }

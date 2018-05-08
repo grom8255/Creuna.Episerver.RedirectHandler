@@ -344,10 +344,11 @@ namespace Creuna.Episerver.RedirectHandler
             public void The_query_string_is_recognized()
             {
                 var oldUrl = "http://staging.seafoodfromnorway.co.uk/recipes/england/norwegian-skrei,-michel%E2%80%99s-way-skrei-bourguignonne?jalla=mikk";
-                var expected = "result";
+                var newUrl = "result";
+                var expected = "result?jalla=mikk";
                 _redirects.Add(new CustomRedirect(
                     "http://staging.seafoodfromnorway.co.uk/Recipes/England/Norwegian-Skrei,-Michel%e2%80%99s-Way-Skrei-Bourguignonne",
-                    expected, false, true, true));
+                    newUrl, appendMatchToNewUrl: false, exactMatch: true, includeQueryString: true));
                 _sut.Redirect(string.Empty, new Uri(oldUrl))
                     .NewUrl.ShouldEqual(expected);
             }
