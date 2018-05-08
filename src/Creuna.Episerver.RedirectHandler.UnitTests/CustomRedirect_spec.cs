@@ -13,8 +13,7 @@ namespace Creuna.Episerver.RedirectHandler
 
         protected void before_all()
         {
-            // TODO: Uncomment this when Vladimir's changes are applied
-            //UrlStandardizer.Accessor = () => new DefaultUrlStandardizer();
+            UrlStandardizer.Accessor = () => new DefaultUrlStandardizer();
         }
 
         protected RedirectsClause WhenUrlIs(string oldUrl)

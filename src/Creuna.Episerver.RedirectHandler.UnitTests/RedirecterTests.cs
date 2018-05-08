@@ -1,4 +1,5 @@
 ﻿using System;
+using Creuna.Episerver.RedirectHandler.Core;
 using Creuna.Episerver.RedirectHandler.Core.Configuration;
 using Creuna.Episerver.RedirectHandler.Core.CustomRedirects;
 using Creuna.Episerver.RedirectHandler.Core.Logging;
@@ -22,6 +23,7 @@ namespace Creuna.Episerver.RedirectHandler
             _configuration = new RedirectConfiguration();
             _redirects = new CustomRedirectCollection();
             _sut = new Redirecter(_redirects, _configuration);
+            UrlStandardizer.Accessor = () => new DefaultUrlStandardizer();
             RequestLogger.Instance = new RequestLogger(_configuration);
         }
 
