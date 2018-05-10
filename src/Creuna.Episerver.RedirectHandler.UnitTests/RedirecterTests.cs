@@ -23,7 +23,7 @@ namespace Creuna.Episerver.RedirectHandler
             _configuration = new RedirectConfiguration();
             _redirects = new CustomRedirectCollection();
             _sut = new Redirecter(_redirects, _configuration);
-            UrlStandardizer.Accessor = () => new DefaultUrlStandardizer();
+            UrlStandardizer.Accessor = () => new EmptyStandardizer();
             RequestLogger.Instance = new RequestLogger(_configuration);
         }
 
@@ -300,7 +300,7 @@ namespace Creuna.Episerver.RedirectHandler
             [Test]
             public void Append_with_querystrings_included_redirects_to_appended_url_with_querystring()
             {
-                _redirects.Add(new CustomRedirect("/de/",
+                _redirects.Add(new CustomRedirect("/de",
                     "/de-welcome/", true, true, true));
                 _sut.Redirect(string.Empty, new Uri("http://mysite.com/de/?parameter=value"))
                     .NewUrl.ShouldEqual("/de-welcome/?parameter=value");

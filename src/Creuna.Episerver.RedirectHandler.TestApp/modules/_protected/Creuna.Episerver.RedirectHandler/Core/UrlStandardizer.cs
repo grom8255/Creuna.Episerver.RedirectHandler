@@ -48,4 +48,11 @@ namespace Creuna.Episerver.RedirectHandler.Core
         }
     }
 
+    public class EmptyStandardizer : IUrlStandardizer
+    {
+        public string Standardize(string url)
+        {
+            return url;
+        }
+    }
 }
