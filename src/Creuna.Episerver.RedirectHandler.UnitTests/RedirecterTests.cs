@@ -227,7 +227,7 @@ namespace Creuna.Episerver.RedirectHandler
         public class When_an_old_url_with_special_chracters_is_set_up_both_with_and_without_querystrings : RedirecterTests
         {
             [Test]
-            public void _then_the_most_specific_redirect_is_used()
+            public void _and_not_found_url_contains_norwegian_characters_then_the_most_specific_redirect_is_used()
             {
                 _redirects.Add(new CustomRedirect("/åøæ",
                     "/b", false, true, true));
@@ -238,7 +238,18 @@ namespace Creuna.Episerver.RedirectHandler
             }
 
             [Test]
-            public void _then_the_querystring_is_only_forwarded_if_specified()
+            public void _then_the_most_specific_redirect_is_used()
+            {
+                _redirects.Add(new CustomRedirect("/xyz",
+                    "/b", false, true, true));
+                _redirects.Add(new CustomRedirect("/xyz?x=y",
+                    "/correct", false, true, true));
+                _sut.Redirect("", new Uri("http://www.incoming.com/" + "xyz?x=y"))
+                    .NewUrl.ShouldEqual("/correct?x=y");
+            }
+
+            [Test]
+            public void _and_not_found_url_contains_norwegian_characters_then_the_querystring_is_only_forwarded_if_specified()
             {
                 _redirects.Add(new CustomRedirect("/åøæ",
                     "/b", false, true, true));
@@ -246,6 +257,28 @@ namespace Creuna.Episerver.RedirectHandler
                     "/correct", false, true, false));
                 _sut.Redirect("", new Uri("http://www.incoming.com/" + "åøæ?x=y"))
                     .NewUrl.ShouldEqual("/correct");
+            }
+
+            [Test]
+            public void _then_the_querystring_is_not_forwarded_when_query_string_not_included()
+            {
+                _redirects.Add(new CustomRedirect("/xyz",
+                    "/b", appendMatchToNewUrl: false, exactMatch: true, includeQueryString: true));
+                _redirects.Add(new CustomRedirect("/xyz?x=y",
+                    "/correct", appendMatchToNewUrl: false, exactMatch: true, includeQueryString: false));
+                _sut.Redirect("", new Uri("http://www.incoming.com/" + "xyz?x=y"))
+                    .NewUrl.ShouldEqual("/correct");
+            }
+
+            [Test]
+            public void _then_the_querystring_is_only_forwarded_if_specified()
+            {
+                _redirects.Add(new CustomRedirect("/xyz",
+                    "/b", appendMatchToNewUrl: false, exactMatch: true, includeQueryString: false));
+                _redirects.Add(new CustomRedirect("/xyz?x=y",
+                    "/correct", appendMatchToNewUrl: false, exactMatch: true, includeQueryString: true));
+                _sut.Redirect("", new Uri("http://www.incoming.com/" + "xyz?x=y"))
+                    .NewUrl.ShouldEqual("/correct?x=y");
             }
         }
 

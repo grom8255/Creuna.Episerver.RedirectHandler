@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using EPiServer.ServiceLocation;
 
 namespace Creuna.Episerver.RedirectHandler.Core
@@ -36,6 +37,8 @@ namespace Creuna.Episerver.RedirectHandler.Core
             if (url == null)
                 return null;
             var result = (url.EndsWith("/") && !url.Contains("?") ? url.Substring(0, url.Length - 1) : url).ToLower();
+            // vl - not sure we need to decode here as HttpModule where we use it has already decoded url for us
+            result = HttpUtility.UrlDecode(result);
             return result;
         }
     }
@@ -44,7 +47,10 @@ namespace Creuna.Episerver.RedirectHandler.Core
     {
         public virtual string Standardize(string url)
         {
-            return url?.ToLower();
+            var result =  url?.ToLower();
+            // vl - not sure we need to decode here as HttpModule where we use it has already decoded url for us
+            result = HttpUtility.UrlDecode(result);
+            return result;
         }
     }
 

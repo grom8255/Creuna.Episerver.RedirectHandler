@@ -32,18 +32,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         public int Add(CustomRedirect customRedirect)
         {
-            // Add to quick look up table too
             AddLookup(customRedirect);
-
-            //var oldUrl = HttpUtility.UrlDecode(customRedirect.OldUrl);
-            //if (_quickLookupTable.ContainsKey(oldUrl))
-            //{
-            //    Log.WarnFormat("Two or more redirects set up for Old Url: {0}", customRedirect.OldUrl);
-            //}
-            //else
-            //{
-            //    _quickLookupTable.Add(oldUrl, customRedirect);
-            //}
 
             return List.Add(customRedirect);
         }
@@ -52,7 +41,16 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         {
             if (customRedirect == null) throw new ArgumentNullException(nameof(customRedirect));
 
-            _quickLookupTable[GetLookupKey(customRedirect)] = customRedirect;
+            var lookupKey = GetLookupKey(customRedirect);
+
+            if (_quickLookupTable.ContainsKey(lookupKey))
+            {
+                Log.WarnFormat("Two or more redirects set up for Old Url: {0}", customRedirect.OldUrl);
+            }
+            else
+            {
+                _quickLookupTable[lookupKey] = customRedirect;
+            }
         }
 
         private void RemoveLookup(/*[NotNull]*/ CustomRedirect customRedirect)
@@ -66,7 +64,6 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         public void Insert(int index, CustomRedirect customRedirect)
         {
-            //_quickLookupTable.Add(customRedirect.OldUrl, customRedirect);
             AddLookup(customRedirect);
             List.Insert(index, customRedirect);
         }
@@ -77,7 +74,6 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         public void Remove(CustomRedirect customRedirect)
         {
-            //_quickLookupTable.Remove(customRedirect.OldUrl);
             RemoveLookup(customRedirect);
             List.Remove(customRedirect);
         }
@@ -190,12 +186,12 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             return CombineUri(newUrl, uriToAppend) + (string.IsNullOrWhiteSpace(querystring) ? string.Empty : string.Concat("?", querystring));
         }
 
-        public static string GetOnlyPathFrom(Uri oldUri)
-        {
-            if (oldUri.IsAbsoluteUri)
-                return oldUri.PathAndQuery;
-            return GetPathFromLocalUri(oldUri);
-        }
+        //public static string GetOnlyPathFrom(Uri oldUri)
+        //{
+        //    if (oldUri.IsAbsoluteUri)
+        //        return oldUri.PathAndQuery;
+        //    return GetPathFromLocalUri(oldUri);
+        //}
 
         private static string CombineUri(Uri newUrl, string uriToAppend)
         {
@@ -250,7 +246,6 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         public bool Contains(string oldUrl)
         {
             return _quickLookupTable.ContainsKey(GetLookupKey(oldUrl));
-            //return _quickLookupTable.ContainsKey(oldUrl);
         }
 
         #endregion
@@ -264,8 +259,6 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
         }
 
         #endregion
-
-        #region Vladimir's fixes
 
         /*[CanBeNull]*/
         public CustomRedirect Find(/*[NotNull]*/ Uri urlNotFound)
@@ -420,7 +413,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         private CustomRedirect ProcessRedirect(/*[NotNull]*/Uri urlNotFound, /*[CanBeNull]*/ CustomRedirect redirect)
         {
-            string newUrl = redirect.NewUrl;
+            var newUrl = redirect.NewUrl;
 
             if (redirect.AppendMatchToNewUrl)
             {
@@ -475,7 +468,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
             var urlFromRule = UrlStandardizer.Standardize(redirect.OldUrl);
 
-            var idx = url.IndexOf(urlFromRule) + urlFromRule.Length;
+            var idx = url.IndexOf(urlFromRule, StringComparison.Ordinal) + urlFromRule.Length;
 
             if (idx > 0 && url.Length > idx)
             {
@@ -544,7 +537,5 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
                    || url.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase)
                    || url.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase);
         }
-
-        #endregion
     }
 }
