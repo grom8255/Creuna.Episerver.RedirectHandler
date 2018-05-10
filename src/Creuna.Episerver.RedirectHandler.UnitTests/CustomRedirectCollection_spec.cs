@@ -45,9 +45,7 @@ namespace Creuna.Episerver.RedirectHandler
             const bool exactMatch = false;
             const bool appendMatchToNewUrl = false;
 
-            context[
-$"Given the redirect rule is http://mysite/test => http://mysite, exactNatch={exactMatch}, appendMatchToNewUrl={appendMatchToNewUrl}"]
-                = () =>
+            context[$"Given the redirect rule is http://mysite/test => http://mysite, exactNatch={exactMatch}, appendMatchToNewUrl={appendMatchToNewUrl}"] = () =>
                 {
                     before = () => redirects = new CustomRedirectCollection { new CustomRedirect("http://mysite/test", "http://mysite", appendMatchToNewUrl, exactMatch, true) };
 
@@ -117,31 +115,29 @@ $"Given the redirect rule is http://mysite/test => http://mysite, exactNatch={ex
             };
         }
 
-        //void describe_CustomRedirectCollection_protocol_invariant_rule()
-        //{
-        //    const bool exactMatch = true;
-        //    const bool skipWildcardAppend = false;
-        //    const bool skipQueryString = false;
+        void describe_CustomRedirectCollection_protocol_invariant_rule()
+        {
+            const bool exactMatch = true;
 
-        //    const bool appendMatchToNewUrl = !skipWildcardAppend;
-        //    const bool includeQueryString = !skipQueryString;
+            const bool appendMatchToNewUrl = true;
+            const bool includeQueryString = true;
 
-        //    context[$"Given the redirect rule is //mysite/test => //mysite, exactMatch={exactMatch}, appendMatchToNewUrl={appendMatchToNewUrl}"] = () =>
-        //    {
-        //        before = () => redirects = new CustomRedirectCollection { new CustomRedirect("//mysite/test", "//mysite", appendMatchToNewUrl, exactMatch, includeQueryString) };
+            context[$"Given the redirect rule is //mysite/test => //mysite, exactMatch={exactMatch}, appendMatchToNewUrl={appendMatchToNewUrl}"] = () =>
+            {
+                before = () => redirects = new CustomRedirectCollection { new CustomRedirect("//mysite/test", "//mysite", appendMatchToNewUrl, exactMatch, includeQueryString) };
 
-        //        WhenUrlIs("http://mysite/test").ThenItRedirectsTo("//mysite");
-        //        WhenUrlIs("https://mysite/test").ThenItRedirectsTo("//mysite");
-        //    };
+                WhenUrlIs("http://mysite/test").ThenItRedirectsTo("//mysite");
+                WhenUrlIs("https://mysite/test").ThenItRedirectsTo("//mysite");
+            };
 
-        //    context[$"Given the redirect rule is //mysite/test => https://mysite, exactMatch={exactMatch}, appendMatchToNewUrl={appendMatchToNewUrl}"] = () =>
-        //    {
-        //        before = () => redirects = new CustomRedirectCollection { new CustomRedirect("//mysite/test", "https://mysite", appendMatchToNewUrl, exactMatch, includeQueryString) };
+            context[$"Given the redirect rule is //mysite/test => https://mysite, exactMatch={exactMatch}, appendMatchToNewUrl={appendMatchToNewUrl}"] = () =>
+            {
+                before = () => redirects = new CustomRedirectCollection { new CustomRedirect("//mysite/test", "https://mysite", appendMatchToNewUrl, exactMatch, includeQueryString) };
 
-        //        WhenUrlIs("http://mysite/test").ThenItRedirectsTo("https://mysite");
-        //        WhenUrlIs("https://mysite/test").ThenItRedirectsTo("https://mysite");
-        //    };
-        //}
+                WhenUrlIs("http://mysite/test").ThenItRedirectsTo("https://mysite");
+                WhenUrlIs("https://mysite/test").ThenItRedirectsTo("https://mysite");
+            };
+        }
 
         void describe_CustomRedirectCollection_wildcard_append_works_with_rule_for_relative_url()
         {

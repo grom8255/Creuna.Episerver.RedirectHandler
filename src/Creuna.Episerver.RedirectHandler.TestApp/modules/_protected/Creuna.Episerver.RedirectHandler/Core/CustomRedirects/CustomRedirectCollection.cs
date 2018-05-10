@@ -473,17 +473,30 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             return redirect;
         }
 
-        private CustomRedirect GetRedirectWithAppendMatchToNewUrl(/*[NotNull]*/Uri urlNotFound, /*[NotNull]*/CustomRedirect redirect)
+        private string GetAppend( /*[NotNull]*/ Uri urlNotFound, /*[NotNull]*/CustomRedirect redirect)
         {
-            //    // We need to append the 404 to the end of the
-            //    // new one. Make a copy of the redir object as we
-            //    // are changing it.
             var url = urlNotFound.ToString();
-            var redirCopy = new CustomRedirect(redirect);
+
             var urlFromRule = UrlStandardizer.Standardize(redirect.OldUrl);
 
-            var urlIsAbsolute = IsAbsoluteUrl(urlFromRule);
-            var append = urlIsAbsolute ? url.Substring(urlFromRule.Length) : urlNotFound.AbsolutePath.Substring(urlFromRule.Length);
+            var idx = url.LastIndexOf(urlFromRule) + urlFromRule.Length;
+
+            if (idx > 0 && url.Length > idx)
+            {
+                var append = url.Substring(idx);
+
+                return append;
+            }
+
+            return string.Empty;
+        }
+
+        private CustomRedirect GetRedirectWithAppendMatchToNewUrl(/*[NotNull]*/Uri urlNotFound, /*[NotNull]*/CustomRedirect redirect)
+        {
+            // We need to append the 404 to the end of the
+            // new one. Make a copy of the redir object as we
+            // are changing it.
+            var append = GetAppend(urlNotFound, redirect);
 
             if (append != string.Empty && urlNotFound.Query != string.Empty)
             {
@@ -492,6 +505,8 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
                     append = append.Replace(urlNotFound.Query, string.Empty);
                 }
             }
+
+            var redirCopy = new CustomRedirect(redirect);
 
             if (append != string.Empty && append != "/")
             {
