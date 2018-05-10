@@ -413,56 +413,25 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             if (redirect == null)
                 return null;
 
-            if (redirect.ExactMatch)
-            {
-                if (redirect.AppendMatchToNewUrl)
-                {
-                    redirect = GetRedirectWithAppendMatchToNewUrl(urlNotFound, redirect);
-                }
-
-                if (!string.IsNullOrEmpty(urlNotFound.Query))
-                {
-                    if (redirect.IncludeQueryString)
-                    {
-                        redirect = GetRedirectlWithIncludeQueryString(urlNotFound, redirect);
-                    }
-                }
-            }
-            else
-            {
-                if (redirect.AppendMatchToNewUrl)
-                {
-                    redirect = GetRedirectWithAppendMatchToNewUrl(urlNotFound, redirect);
-                }
-
-                if (!string.IsNullOrEmpty(urlNotFound.Query))
-                {
-                    if (redirect.IncludeQueryString)
-                    {
-                        redirect = GetRedirectlWithIncludeQueryString(urlNotFound, redirect);
-                    }
-                }
-            }
+            redirect = ProcessRedirect(urlNotFound, redirect);
 
             return redirect;
         }
 
-        private CustomRedirect GetRedirectlWithIncludeQueryString(/*[NotNull]*/Uri urlNotFound, /*[NotNull]*/CustomRedirect redirect)
+        private CustomRedirect ProcessRedirect(/*[NotNull]*/Uri urlNotFound, /*[CanBeNull]*/ CustomRedirect redirect)
         {
-            var newUrlParts = redirect.NewUrl.Split(new[] { "?" }, StringSplitOptions.RemoveEmptyEntries);
-            var newUrlQuery = newUrlParts.Length > 1 ? newUrlParts[1] : null;
+            string newUrl = redirect.NewUrl;
 
-            var originalQueryParsed = HttpUtility.ParseQueryString(urlNotFound.Query);
-            var targetQueryParsed = newUrlQuery != null
-                ? HttpUtility.ParseQueryString(newUrlQuery)
-                : new NameValueCollection();
-
-            var appendQuery = Merge(targetQueryParsed, originalQueryParsed);
-            var newUrl = redirect.NewUrl;
-
-            if (!appendQuery.IsNullOrEmpty())
+            if (redirect.AppendMatchToNewUrl)
             {
-                newUrl = newUrl.Contains("?") ? $"{newUrl}&{appendQuery}" : $"{newUrl}?{appendQuery}";
+                newUrl = AppendMatchToNewUrl(urlNotFound, redirect);
+
+                redirect.NewUrl = newUrl;
+            }
+
+            if (redirect.IncludeQueryString)
+            {
+                newUrl = AddQueryStringToUrl(newUrl, urlNotFound.Query);
             }
 
             redirect = new CustomRedirect(redirect)
@@ -473,13 +442,40 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             return redirect;
         }
 
+        private string AddQueryStringToUrl(string url, string queryString)
+        {
+            if (string.IsNullOrEmpty(queryString))
+            {
+                return url;
+            }
+
+            var newUrlParts = url.Split(new[] { "?" }, StringSplitOptions.RemoveEmptyEntries);
+            var newUrlQuery = newUrlParts.Length > 1 ? newUrlParts[1] : null;
+
+            var originalQueryParsed = HttpUtility.ParseQueryString(queryString);
+            var targetQueryParsed = newUrlQuery != null
+                ? HttpUtility.ParseQueryString(newUrlQuery)
+                : new NameValueCollection();
+
+            var appendQuery = Merge(targetQueryParsed, originalQueryParsed);
+
+            var newUrl = url;
+
+            if (!appendQuery.IsNullOrEmpty())
+            {
+                newUrl = newUrl.Contains("?") ? $"{newUrl}&{appendQuery}" : $"{newUrl}?{appendQuery}";
+            }
+
+            return newUrl;
+        }
+
         private string GetAppend( /*[NotNull]*/ Uri urlNotFound, /*[NotNull]*/CustomRedirect redirect)
         {
             var url = urlNotFound.ToString();
 
             var urlFromRule = UrlStandardizer.Standardize(redirect.OldUrl);
 
-            var idx = url.LastIndexOf(urlFromRule) + urlFromRule.Length;
+            var idx = url.IndexOf(urlFromRule) + urlFromRule.Length;
 
             if (idx > 0 && url.Length > idx)
             {
@@ -491,7 +487,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             return string.Empty;
         }
 
-        private CustomRedirect GetRedirectWithAppendMatchToNewUrl(/*[NotNull]*/Uri urlNotFound, /*[NotNull]*/CustomRedirect redirect)
+        private string AppendMatchToNewUrl(/*[NotNull]*/Uri urlNotFound, /*[NotNull]*/CustomRedirect redirect)
         {
             // We need to append the 404 to the end of the
             // new one. Make a copy of the redir object as we
@@ -510,12 +506,22 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
             if (append != string.Empty && append != "/")
             {
-                var newUrl = UrlStandardizer.Standardize(redirCopy.NewUrl);
-                redirCopy.NewUrl = UrlStandardizer.Standardize(newUrl + append);
-                return redirCopy;
+                var redirectUrl = new Uri(redirCopy.NewUrl, IsAbsoluteUrl(redirCopy.NewUrl) ? UriKind.Absolute : UriKind.Relative);
+                var redirectUrlQuery = GetQueryFrom(redirectUrl);
+
+                var newUrl = UrlStandardizer.Standardize(RemoveQuery(redirCopy.NewUrl));
+
+                newUrl = UrlStandardizer.Standardize(newUrl + append);
+
+                if (redirectUrlQuery != string.Empty)
+                {
+                    newUrl = AddQueryStringToUrl(newUrl, redirectUrlQuery);
+                }
+
+                return newUrl;
             }
 
-            return redirect;
+            return redirect.NewUrl;
         }
 
         /*[NotNull]*/

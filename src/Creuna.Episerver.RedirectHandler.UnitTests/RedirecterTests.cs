@@ -23,7 +23,7 @@ namespace Creuna.Episerver.RedirectHandler
             _configuration = new RedirectConfiguration();
             _redirects = new CustomRedirectCollection();
             _sut = new Redirecter(_redirects, _configuration);
-            UrlStandardizer.Accessor = () => new EmptyStandardizer();
+            UrlStandardizer.Accessor = () => new DefaultUrlStandardizer();
             RequestLogger.Instance = new RequestLogger(_configuration);
         }
 
@@ -34,7 +34,7 @@ namespace Creuna.Episerver.RedirectHandler
             public override void SetUp()
             {
                 base.SetUp();
-                _redirect = new CustomRedirect("/no/", "/new/?redirected=1", true, false, true);
+                _redirect = new CustomRedirect("/no/", "/new/?redirected=1", appendMatchToNewUrl: true, exactMatch: false, includeQueryString: true);
                 _redirects.Add(_redirect);
             }
 
@@ -78,12 +78,12 @@ namespace Creuna.Episerver.RedirectHandler
             {
                 base.SetUp();
 
-                _redirects.Add(new CustomRedirect("/no", "newurl", false, true, false, 0));
+                _redirects.Add(new CustomRedirect("/no", "newurl", appendMatchToNewUrl: false, exactMatch: true, includeQueryString: false, state: 0));
             }
 
             [Test]
             [TestCase("http://www.somewhere.com/nooooooo")]
-            [TestCase("http://www.somewhere.com/no/")]
+            [TestCase("http://www.somewhere.com/no/1")]
             public void Partial_match_should_not_get_redirected(string oldUri)
             {
                 var result = _sut.Redirect("", new Uri(oldUri));
@@ -292,7 +292,7 @@ namespace Creuna.Episerver.RedirectHandler
             public void Absolute_uris_with_nonexact_match_does_not_throw_loop_exception()
             {
                 _redirects.Add(new CustomRedirect("/a",
-                    "http://www.externalsite.com", true, false, true));
+                    "http://www.externalsite.com/", appendMatchToNewUrl: true, exactMatch: false, includeQueryString: true));
                 _sut.Redirect(string.Empty, new Uri("http://mysite.com/a/aaaaaa"))
                     .NewUrl.ShouldEqual("http://www.externalsite.com/aaaaaa");
             }
@@ -301,7 +301,7 @@ namespace Creuna.Episerver.RedirectHandler
             public void Append_with_querystrings_included_redirects_to_appended_url_with_querystring()
             {
                 _redirects.Add(new CustomRedirect("/de",
-                    "/de-welcome/", true, true, true));
+                    "/de-welcome/", appendMatchToNewUrl: true, exactMatch: true, includeQueryString: true));
                 _sut.Redirect(string.Empty, new Uri("http://mysite.com/de/?parameter=value"))
                     .NewUrl.ShouldEqual("/de-welcome/?parameter=value");
             }

@@ -89,6 +89,7 @@ namespace Creuna.Episerver.RedirectHandler
                     before = () => redirects = new CustomRedirectCollection { new CustomRedirect("http://mysite/test", "http://mysite", appendMatchToNewUrl, exactMatch, true) };
 
                     WhenUrlIs("http://mysite/test?query=my-query").ThenItRedirectsTo("http://mysite?query=my-query");
+                    WhenUrlIs("http://mysite/testme?query=my-query").ThenItRedirectsTo("http://mysiteme?query=my-query");
                 };
 
                 context["and includeQueryString=false"] = () =>
@@ -96,6 +97,7 @@ namespace Creuna.Episerver.RedirectHandler
                     before = () => redirects = new CustomRedirectCollection { new CustomRedirect("http://mysite/test", "http://mysite", appendMatchToNewUrl, exactMatch, false) };
 
                     WhenUrlIs("http://mysite/test?query=my-query").ThenItRedirectsTo("http://mysite");
+                    WhenUrlIs("http://mysite/testme?query=my-query").ThenItRedirectsTo("http://mysiteme");
                 };
             };
         }
