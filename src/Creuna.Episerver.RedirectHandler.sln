@@ -9,6 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Creuna.Episerver.RedirectHa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Creuna.Episerver.RedirectHandler.UnitTests", "Creuna.Episerver.RedirectHandler.UnitTests\Creuna.Episerver.RedirectHandler.UnitTests.csproj", "{154AF453-8A4B-4EBB-AC33-2207A544BC1B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8A7E515F-CB8A-494F-87F6-67299E5CA517}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
