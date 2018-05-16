@@ -275,26 +275,25 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
 
         private CustomRedirect ProcessRedirect(/*[NotNull]*/Uri urlNotFound, /*[CanBeNull]*/ CustomRedirect redirect)
         {
-            var newUrl = redirect.NewUrl;
+            var redirCopy = new CustomRedirect(redirect);
 
-            if (redirect.AppendMatchToNewUrl)
+            var newUrl = redirCopy.NewUrl;
+
+            if (redirCopy.AppendMatchToNewUrl)
             {
-                newUrl = AppendMatchToNewUrl(urlNotFound, redirect);
+                newUrl = AppendMatchToNewUrl(urlNotFound, redirCopy);
 
-                redirect.NewUrl = newUrl;
+                redirCopy.NewUrl = newUrl;
             }
 
-            if (redirect.IncludeQueryString)
+            if (redirCopy.IncludeQueryString)
             {
                 newUrl = AddQueryStringToUrl(newUrl, urlNotFound.Query);
             }
 
-            redirect = new CustomRedirect(redirect)
-            {
-                NewUrl = newUrl
-            };
+            redirCopy.NewUrl = newUrl;
 
-            return redirect;
+            return redirCopy;
         }
 
         private string AddQueryStringToUrl(string url, string queryString)
