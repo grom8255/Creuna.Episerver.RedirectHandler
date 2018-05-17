@@ -31,6 +31,8 @@ namespace Creuna.Episerver.RedirectHandler.Core.CustomRedirects
             NewUrl = redirect.NewUrl;
             AppendMatchToNewUrl = redirect.AppendMatchToNewUrl;
             IncludeQueryString = redirect.IncludeQueryString;
+            State = redirect.State;
+            NotfoundErrorCount = redirect.NotfoundErrorCount;
         }
 
         public CustomRedirect(string oldUrl, string newUrl, bool appendMatchToNewUrl, bool exactMatch, bool includeQueryString, GetState state, int notFoundErrorCount)
