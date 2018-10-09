@@ -98,6 +98,7 @@
     <Compile Include="Core\Logging\Log4NetLogger.cs" />
     <Compile Include="Core\IRedirectLogger.cs" />
     <Compile Include="Core\PageMovedHandler.cs" />
+    <None Include="Core\PageMovedHandlerInitializationModule.cs.pp" />
     <Compile Include="Core\RedirectAttempt.cs" />
     <Compile Include="Core\CustomRedirects\Redirecter.cs" />
     <Compile Include="Core\Initialization\Custom404HandlerInitialization.cs" />
@@ -277,10 +278,6 @@
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.2.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
