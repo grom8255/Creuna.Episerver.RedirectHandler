@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using Creuna.Episerver.RedirectHandler.Core.Configuration;
 using Creuna.Episerver.RedirectHandler.Core.CustomRedirects;
+using EPiServer;
 using EPiServer.Logging;
 using EPiServer.ServiceLocation;
 using EPiServer.Web;
@@ -110,9 +111,16 @@ namespace Creuna.Episerver.RedirectHandler.Core
         {
             string url = Get404Url();
 
+
             context.Response.Clear();
             context.Response.TrySkipIisCustomErrors = true;
             context.Server.ClearError();
+
+            if (url == null)
+            {
+                context.Response.StatusCode = 404; // ? 
+                context.Response.End();
+            }
 
             // do the redirect to the 404 page here
             if (HttpRuntime.UsingIntegratedPipeline)
@@ -168,6 +176,10 @@ namespace Creuna.Episerver.RedirectHandler.Core
         {
             string requestUrl = ctx.Request.Url.AbsolutePath;
             string fnfPageUrl = Get404Url();
+
+            if (fnfPageUrl == null)
+                return false;
+
             if (fnfPageUrl.StartsWith("~"))
                 fnfPageUrl = fnfPageUrl.Substring(1);
             int posQuery = fnfPageUrl.IndexOf("?", StringComparison.Ordinal);
@@ -241,8 +253,23 @@ namespace Creuna.Episerver.RedirectHandler.Core
         private string Get404Url()
         {
             string baseUrl = _redirectConfiguration.FileNotFoundHandlerPage;
+            if (string.IsNullOrEmpty(baseUrl))
+                return null;
             string currentUrl = HttpContext.Current.Request.Url.PathAndQuery;
-            return string.Concat(baseUrl, NotFoundParam, GetSeparator(baseUrl), "=", HttpContext.Current.Server.UrlEncode(currentUrl));
+            
+            // urlbuilder ?
+            var builder = new UrlBuilder(baseUrl)
+            {
+                QueryCollection =
+                {
+                    [NotFoundParam] = currentUrl
+                }
+            };
+            var result = builder.ToString();
+            return result;
+
+            // 2 problems: no proper separator added and currentUrl is encoded
+            // return string.Concat(baseUrl, NotFoundParam, GetSeparator(baseUrl), "=", HttpContext.Current.Server.UrlEncode(currentUrl));
         }
 
         private string GetSeparator(string baseUrl) => baseUrl.Contains("?") ? "&" : "?";
