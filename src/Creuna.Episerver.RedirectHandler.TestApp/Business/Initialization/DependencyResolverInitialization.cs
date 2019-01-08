@@ -17,9 +17,11 @@ namespace Creuna.Episerver.RedirectHandler.TestApp.Business.Initialization
     {
         public void ConfigureContainer(ServiceConfigurationContext context)
         {
-            context.Container.Configure(ConfigureContainer);
+            var container = context.StructureMap();
 
-            DependencyResolver.SetResolver(new StructureMapDependencyResolver(context.Container));
+            container.Configure(ConfigureContainer);
+
+            DependencyResolver.SetResolver(new StructureMapDependencyResolver(container));
         }
 
         private static void ConfigureContainer(ConfigurationExpression container)
