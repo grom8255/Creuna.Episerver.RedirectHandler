@@ -11,6 +11,7 @@ The package can be found in the [EPiServer Nuget Feed](http://nuget.episerver.co
 
 ## Release notes
 
+- 5.0.0 - episerver updated to v11
 - 4.0.0 - episerver updated to v10; urls with and without trailing slash are treated the same way
 - Now handled special characters in from urls
 - Proven compatibility with EPIServer 9.9.
