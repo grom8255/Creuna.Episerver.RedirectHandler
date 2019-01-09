@@ -1,5 +1,7 @@
 ﻿using Creuna.Episerver.RedirectHandler.Core.CustomRedirects;
 using System;
+using Creuna.Episerver.RedirectHandler.Core.Configuration;
+using Creuna.Episerver.RedirectHandler.Core.Logging;
 using Moq;
 using NUnit.Framework;
 
@@ -15,6 +17,8 @@ namespace Creuna.Episerver.RedirectHandler
         {
             _redirecterMock = new Mock<IRedirecter>();
             _sut = new DictionaryCachedRedirecter(_redirecterMock.Object);
+
+            RequestLogger.Instance = new RequestLogger(new RedirectConfiguration());
         }
 
         [Test]

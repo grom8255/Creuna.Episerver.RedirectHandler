@@ -39,7 +39,7 @@ namespace Creuna.Episerver.RedirectHandler.Core.Initialization
 
         public void ConfigureContainer(ServiceConfigurationContext context)
         {
-            var container = context.Container;
+            var container = context.StructureMap();
             if (!container.Model.HasImplementationsFor<IRedirectLogger>())
                 container.Configure(x => x.For<IRedirectLogger>().Use<Log4NetLogger>());
         }
